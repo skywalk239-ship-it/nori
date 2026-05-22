@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
+<title>NORI — Osaka in One Tap</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    font-family: 'Noto Sans KR', 'Hiragino Sans', 'Apple SD Gothic Neo', sans-serif;
+    background: #0a0f2c;
+    color: #333;
+    user-select: none;
+    -webkit-user-select: none;
+    min-height: 100vh;
+  }
+
+  #app {
+    max-width: 520px;
+    margin: 0 auto;
+    background: #f0f2f7;
+    min-height: 100vh;
+    position: relative;
+    box-shadow: 0 0 40px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== Intro ===== */
+  #intro {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, #0a0f2c 0%, #1a2050 100%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s, transform 0.5s ease-in;
+  }
+  #intro.hide { opacity: 0; transform: translateY(-30px); pointer-events: none; }
+  .intro-title {
+    color: #fff;
+    font-size: 64px;
+    font-weight: 800;
+    letter-spacing: 6px;
+    text-shadow: 0 4px 24px rgba(80, 120, 255, 0.4);
+    animation: titleIn 0.8s ease-out;
+  }
+  .intro-sub {
+    color: #a0a8c0;
+    font-size: 14px;
+    letter-spacing: 3px;
+    margin-top: 12px;
+    animation: titleIn 0.8s ease-out 0.2s backwards;
+  }
+  .intro-tap {
+    position: absolute;
+    bottom: 80px;
+    color: #c0c8e0;
+    font-size: 13px;
+    letter-spacing: 4px;
+    animation: tapBlink 1.4s ease-in-out 1s infinite;
+  }
+  .intro-train {
+    position: absolute;
+    bottom: 140px;
+    left: -200px;
+    width: 180px;
+    height: 50px;
+    animation: trainSlide 6s linear 0.6s infinite;
+  }
+  @keyframes titleIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes tapBlink {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  @keyframes trainSlide {
+    from { left: -200px; }
+    to { left: 100%; }
+  }
+
+  /* ===== Header ===== */
+  #header {
+    background: #0a0f2c;
+    color: white;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .logo {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 3px;
+  }
+  .logo .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #ff6b00;
+    border-radius: 50%;
+    margin-left: 4px;
+    vertical-align: super;
+  }
+  .header-btns { display: flex; gap: 6px; }
+  .icon-btn {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .icon-btn:active { background: rgba(255,255,255,0.2); }
+
+  /* ===== Search ===== */
+  #search-area {
+    background: #fff;
+    padding: 12px 14px 10px;
+    border-bottom: 1px solid #e8eaf0;
+    position: relative;
+    z-index: 30;
+  }
+  .search-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 7px;
+  }
+  .search-row:last-of-type { margin-bottom: 0; }
+  .search-tag {
+    flex: 0 0 42px;
+    height: 36px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: #ff6b00;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .search-tag.to { background: #0a0f2c; }
+  .search-input {
+    flex: 1;
+    height: 36px;
+    border: 1px solid #d8dce5;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 14px;
+    outline: none;
+    background: #f8fafc;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: inherit;
+    min-width: 0;
+  }
+  .search-input:focus { border-color: #0a0f2c; background: #fff; }
+  .search-input.filled { background: #fff5e6; border-color: #ff6b00; font-weight: 600; }
+  .to-input.filled { background: #e8f4ff; border-color: #0a0f2c; }
+  .x-btn {
+    width: 30px;
+    height: 36px;
+    border: none;
+    background: #f0f2f7;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #888;
+    cursor: pointer;
+    flex: 0 0 30px;
+  }
+  .swap-btn {
+    width: 100%;
+    height: 28px;
+    background: transparent;
+    border: 1px dashed #d8dce5;
+    border-radius: 8px;
+    margin-top: 6px;
+    color: #666;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .swap-btn:active { background: #f0f2f7; }
+
+  /* Suggestion dropdown */
+  #suggestions {
+    position: absolute;
+    left: 56px;
+    right: 50px;
+    top: 50px;
+    background: white;
+    border: 1px solid #d8dce5;
+    border-radius: 10px;
+    max-height: 260px;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    z-index: 40;
+    display: none;
+  }
+  #suggestions.show { display: block; }
+  .sugg-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f2f7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sugg-item:last-child { border-bottom: none; }
+  .sugg-item:active, .sugg-item:hover { background: #f8fafc; }
+  .sugg-ko { font-weight: 700; font-size: 14px; color: #0a0f2c; }
+  .sugg-ja { color: #999; font-size: 11px; }
+  .sugg-lines { display: inline-flex; gap: 3px; margin-left: auto; flex-wrap: wrap; }
+  .lb {
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    padding: 0 5px;
+    font-size: 10px;
+    color: white;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+  }
+
+  /* ===== Map ===== */
+  #map-section {
+    flex: 1;
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  #map-scroll {
+    position: relative;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(100vh - 280px);
+    min-height: 360px;
+  }
+  #map-inner {
+    position: relative;
+    width: 100%;
+    transition: width 0.2s ease;
+  }
+  #map-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+  #map-overlay {
+    position: absolute;
+    inset: 0;
+    cursor: crosshair;
+  }
+  .hotspot {
+    /* 작은 점 마커 — 지도를 가리지 않도록 최소화 */
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    pointer-events: none;   /* 클릭은 overlay 전체로 처리 */
+    background: rgba(255,255,255,0.0);
+    border: none;
+  }
+  .hotspot.from {
+    width: 20px; height: 20px;
+    background: rgba(255, 107, 0, 0.5);
+    border: 3px solid #ff6b00;
+    box-shadow: 0 0 14px rgba(255, 107, 0, 0.8);
+    animation: pulseHs 1.4s ease-in-out infinite;
+    z-index: 4;
+  }
+  .hotspot.to {
+    width: 20px; height: 20px;
+    background: rgba(10, 15, 44, 0.5);
+    border: 3px solid #0a0f2c;
+    box-shadow: 0 0 14px rgba(10, 15, 44, 0.8);
+    animation: pulseHs 1.4s ease-in-out infinite;
+    z-index: 4;
+  }
+  @keyframes pulseHs {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50%       { transform: translate(-50%, -50%) scale(1.3); }
+  }
+  .hotspot-label {
+    position: absolute;
+    top: 22px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px; font-weight: 700;
+    color: #fff; white-space: nowrap;
+    padding: 2px 6px; border-radius: 5px;
+    pointer-events: none; opacity: 0;
+    line-height: 1.3;
+  }
+  .hotspot.from .hotspot-label { opacity: 1; background: #ff6b00; }
+  .hotspot.to  .hotspot-label  { opacity: 1; background: #0a0f2c; }
+
+  /* 탭 피드백 토스트 */
+  .tap-toast {
+    position: absolute;
+    background: rgba(10,15,44,0.88);
+    color: #fff; font-size: 12px; font-weight: 700;
+    padding: 6px 14px; border-radius: 20px;
+    pointer-events: none; z-index: 90;
+    white-space: nowrap;
+    transform: translate(-50%, -130%);
+    animation: toastFade 1.3s ease forwards;
+  }
+  @keyframes toastFade {
+    0%   { opacity: 1; transform: translate(-50%, -130%); }
+    60%  { opacity: 1; transform: translate(-50%, -150%); }
+    100% { opacity: 0; transform: translate(-50%, -160%); }
+  }
+
+  /* Map toolbar */
+  .map-tools {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 10;
+  }
+  .tool-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #d8dce5;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #0a0f2c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+  }
+  .tool-btn:active { background: #e8eaf0; }
+  .help-banner {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 15, 44, 0.88);
+    color: #fff;
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 14px;
+    pointer-events: none;
+    z-index: 8;
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+  }
+  .help-banner.show { opacity: 1; }
+
+  /* Missing map */
+  .missing-map {
+    padding: 60px 30px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    line-height: 1.6;
+    background: #f8fafc;
+  }
+  .missing-map code {
+    background: #e8eaf0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #c0392b;
+  }
+
+  /* ===== Action bar ===== */
+  #action-bar {
+    background: #fff;
+    padding: 10px 14px 14px;
+    border-top: 1px solid #e8eaf0;
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+  }
+  .go-btn {
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(135deg, #ff6b00 0%, #ff8c33 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+    transition: transform 0.1s, box-shadow 0.1s;
+    font-family: inherit;
+  }
+  .go-btn:disabled {
+    background: #ccd0db;
+    box-shadow: none;
+    cursor: not-allowed;
+    color: #888;
+  }
+  .go-btn:not(:disabled):active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 6px rgba(255, 107, 0, 0.3);
+  }
+
+  /* ===== Route tabs ===== */
+  .route-tabs {
+    display: flex;
+    padding: 8px 14px 10px;
+    gap: 8px;
+    border-bottom: 1px solid #f0f2f7;
+    background: white;
+    flex: 0 0 auto;
+  }
+  .route-tab {
+    flex: 1;
+    height: 36px;
+    border: 1.5px solid #d8dce5;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    background: white;
+    color: #aaa;
+    font-family: inherit;
+    transition: all 0.15s;
+    letter-spacing: 0.2px;
+  }
+  .route-tab.active {
+    background: #0a0f2c;
+    color: white;
+    border-color: #0a0f2c;
+    box-shadow: 0 2px 8px rgba(10,15,44,0.25);
+  }
+  .route-tab:not(.active):active { background: #f5f6fa; }
+
+  /* ===== Result panel ===== */
+  #result-panel {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    bottom: 0;
+    width: 100%;
+    max-width: 520px;
+    height: 88vh;
+    background: white;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.25);
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  #result-panel.show {
+    transform: translateX(-50%) translateY(0);
+  }
+  .result-handle {
+    width: 44px;
+    height: 4px;
+    background: #d8dce5;
+    border-radius: 2px;
+    margin: 10px auto 4px;
+  }
+  .result-head {
+    padding: 8px 18px 14px;
+    border-bottom: 1px solid #f0f2f7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .result-od {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    min-width: 0;
+  }
+  .result-od .od-from, .result-od .od-to {
+    font-weight: 700;
+    color: #0a0f2c;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .result-od .od-from { color: #ff6b00; }
+  .result-od .arrow { color: #888; flex: 0 0 auto; }
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f0f2f7;
+    border: none;
+    color: #555;
+    font-size: 18px;
+    cursor: pointer;
+    flex: 0 0 32px;
+    font-family: inherit;
+  }
+  /* ===== Kakao-style result ===== */
+  #kakao-result {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #f5f6fa;
+  }
+  .kr-summary {
+    background: #fff;
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid #eef0f5;
+  }
+  .kr-total-time {
+    font-size: 38px;
+    font-weight: 900;
+    color: #0a0f2c;
+    line-height: 1;
+  }
+  .kr-total-time sup { font-size: 17px; font-weight: 600; color: #555; vertical-align: middle; margin-left: 2px; }
+  .kr-meta { font-size: 12px; color: #999; margin-top: 6px; }
+  .kr-chips { display: flex; align-items: center; gap: 3px; margin-top: 14px; flex-wrap: wrap; }
+  .kr-chip { height: 8px; border-radius: 4px; min-width: 18px; }
+  .kr-chip-walk { width: 10px; height: 10px; border-radius: 50%; background: #d8dce5; border: 2px solid #fff; outline: 1.5px solid #bbb; flex: 0 0 10px; }
+
+  .kr-timeline { padding: 12px 18px 12px; }
+  .kr-tl-item { position: relative; padding-left: 26px; }
+  .kr-tl-dot {
+    position: absolute; left: 0; top: 2px;
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 3px solid #bbb; background: #fff; z-index: 2;
+  }
+  .kr-tl-dot.dep { border-color: #ff6b00; }
+  .kr-tl-dot.arr { border-color: #0a0f2c; width: 16px; height: 16px; left: -1px; }
+  .kr-tl-station { font-size: 14px; font-weight: 700; color: #0a0f2c; padding-bottom: 2px; line-height: 1.4; }
+  .kr-tl-station.dep { color: #ff6b00; }
+  .kr-tl-station.arr { color: #0a0f2c; font-size: 15px; margin-top: 2px; }
+  .kr-seg-body {
+    padding: 8px 0 8px 12px;
+    border-left: 5px solid #ccc;
+    margin-left: 6px;
+    margin-bottom: 0;
+  }
+  .kr-seg-info { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
+  .kr-seg-badge {
+    display: inline-flex; align-items: center;
+    height: 22px; padding: 0 10px; border-radius: 11px;
+    font-size: 11px; font-weight: 800; color: #fff;
+  }
+  .kr-seg-stops { font-size: 12px; color: #888; }
+  .kr-seg-time { font-size: 12px; font-weight: 700; color: #444; }
+  .kr-seg-dot { color: #ccc; font-size: 10px; }
+
+  .kr-walk-item { }
+  .kr-walk-body {
+    padding: 6px 0 6px 12px;
+    border-left: 3px dashed #ccc;
+    margin-left: 7px;
+  }
+  .kr-walk-label { font-size: 12px; color: #999; display: flex; align-items: center; gap: 4px; }
+
+  .kr-no-route {
+    padding: 60px 20px;
+    text-align: center; color: #999; font-size: 14px; line-height: 1.8;
+  }
+
+  .result-footer {
+    padding: 10px 18px 16px;
+    background: #fafbfd;
+    border-top: 1px solid #f0f2f7;
+    display: flex;
+    gap: 8px;
+  }
+  .footer-btn {
+    flex: 1;
+    height: 42px;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .footer-btn.primary {
+    background: #0a0f2c;
+    color: white;
+  }
+  .footer-btn.secondary {
+    background: white;
+    border: 1px solid #d8dce5;
+    color: #333;
+  }
+  .footer-btn:active { opacity: 0.85; }
+
+/* 경유역 펼치기 */
+.seg-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  background: none;
+  border: 1px solid #d8dce5;
+  border-radius: 8px;
+  font-size: 11px;
+  color: #888;
+  padding: 3px 9px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.1s;
+}
+.seg-expand-btn:active { background: #f0f2f7; }
+.seg-stations {
+  display: none;
+  margin-top: 6px;
+  padding-left: 2px;
+}
+.seg-stations.open { display: block; }
+.seg-st-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+}
+.seg-st-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: 0 0 6px;
+  opacity: 0.55;
+}
+.seg-st-name {
+  font-size: 12px;
+  color: #777;
+}
+
+/* Route option cards */
+.route-cards-wrap {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px 10px;
+  overflow-x: auto;
+  background: #f5f6fa;
+  border-bottom: 1px solid #e8eaf0;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
+}
+.route-card {
+  flex: 0 0 auto;
+  min-width: 130px;
+  padding: 10px 12px;
+  border: 1.5px solid #d8dce5;
+  border-radius: 14px;
+  cursor: pointer;
+  background: white;
+  transition: all 0.15s;
+}
+.route-card.selected {
+  border-color: #0a0f2c;
+  background: #0a0f2c;
+}
+.rc-time {
+  font-size: 20px;
+  font-weight: 900;
+  color: #0a0f2c;
+  line-height: 1;
+}
+.route-card.selected .rc-time { color: white; }
+.rc-min { font-size: 12px; font-weight: 600; margin-left: 1px; }
+.rc-fare {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ff6b00;
+  margin-top: 3px;
+}
+.route-card.selected .rc-fare { color: #ffaa66; }
+.rc-meta {
+  font-size: 10px;
+  color: #aaa;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.route-card.selected .rc-meta { color: rgba(255,255,255,0.65); }
+.rc-chips {
+  display: flex;
+  gap: 3px;
+  margin-top: 7px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.rc-chip {
+  height: 16px;
+  border-radius: 8px;
+  padding: 0 5px;
+  font-size: 9px;
+  font-weight: 800;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+}
+.rc-arr { font-size: 8px; color: #ccc; margin: 0 1px; }
+.route-card.selected .rc-arr { color: rgba(255,255,255,0.4); }
+.kr-fare-badge {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ff6b00;
+  margin-top: 3px;
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============= INTRO ============= -->
+  <div id="intro">
+    <svg class="intro-train" viewBox="0 0 180 50">
+      <g fill="#3a4170" stroke="#5060a0" stroke-width="1">
+        <rect x="2" y="10" width="160" height="30" rx="5"/>
+        <path d="M 162 10 L 175 20 L 175 30 L 162 40 Z"/>
+        <circle cx="22" cy="42" r="5" fill="#0a0f2c"/>
+        <circle cx="50" cy="42" r="5" fill="#0a0f2c"/>
+        <circle cx="115" cy="42" r="5" fill="#0a0f2c"/>
+        <circle cx="143" cy="42" r="5" fill="#0a0f2c"/>
+      </g>
+      <g fill="#ffd966">
+        <rect x="10" y="15" width="18" height="11" rx="1"/>
+        <rect x="34" y="15" width="18" height="11" rx="1"/>
+        <rect x="58" y="15" width="18" height="11" rx="1"/>
+        <rect x="82" y="15" width="18" height="11" rx="1"/>
+        <rect x="106" y="15" width="18" height="11" rx="1"/>
+        <rect x="130" y="15" width="18" height="11" rx="1"/>
+      </g>
+      <circle cx="170" cy="25" r="2.5" fill="#fff5b0"/>
+    </svg>
+    <div class="intro-title">NORI</div>
+    <div class="intro-sub">OSAKA IN ONE TAP</div>
+    <div class="intro-tap">TAP TO START</div>
+  </div>
+
+  <!-- ============= HEADER ============= -->
+  <div id="header">
+    <div class="logo">NORI<span class="dot"></span></div>
+    <div class="header-btns">
+      <button class="icon-btn" id="reset-btn">↺ 초기화</button>
+    </div>
+  </div>
+
+  <!-- ============= SEARCH ============= -->
+  <div id="search-area">
+    <div class="search-row">
+      <div class="search-tag">출발</div>
+      <input class="search-input from-input" id="from-input" type="text" placeholder="출발역 (예: 우메다, 신오사카)" autocomplete="off">
+      <button class="x-btn" id="from-clear" aria-label="clear">×</button>
+    </div>
+    <div class="search-row">
+      <div class="search-tag to">도착</div>
+      <input class="search-input to-input" id="to-input" type="text" placeholder="도착역 (예: 난바, 덴노지)" autocomplete="off">
+      <button class="x-btn" id="to-clear" aria-label="clear">×</button>
+    </div>
+    <button class="swap-btn" id="swap-btn">↑↓ 출발 ↔ 도착 바꾸기</button>
+    <div id="suggestions"></div>
+  </div>
+
+  <!-- ============= MAP ============= -->
+  <div id="map-section">
+    <div id="map-scroll">
+      <div id="map-inner">
+        <img id="map-img" src="./osaka_map.PNG" alt="오사카 광역 노선도">
+        <div id="map-overlay"></div>
+      </div>
+      <div id="missing-map" class="missing-map" style="display:none;">
+        <p style="font-size:16px; color:#333; margin-bottom:12px;">🗺️ 노선도 이미지를 찾을 수 없습니다</p>
+        <p>이 HTML과 같은 폴더에<br><code>osaka_map.PNG</code> 파일이 있어야 합니다.</p>
+      </div>
+    </div>
+    <div class="help-banner" id="help-banner">지도 위 역을 직접 탭하거나 위에서 검색하세요</div>
+    <div class="map-tools">
+      <button class="tool-btn" id="zoom-in" aria-label="zoom in">+</button>
+      <button class="tool-btn" id="zoom-out" aria-label="zoom out">−</button>
+      <button class="tool-btn" id="zoom-reset" aria-label="reset" style="font-size:14px;">⊙</button>
+    </div>
+  </div>
+
+  <!-- ============= ACTION BAR ============= -->
+  <div id="action-bar">
+    <button class="go-btn" id="go-btn" disabled>출발 · 도착을 선택해주세요</button>
+  </div>
+
+  <!-- ============= RESULT (Google Maps) ============= -->
+  <div id="result-panel">
+    <div class="result-handle"></div>
+    <div class="result-head">
+      <div class="result-od">
+        <span class="od-from" id="od-from">-</span>
+        <span class="arrow">→</span>
+        <span class="od-to" id="od-to">-</span>
+      </div>
+      <button class="close-btn" id="close-result">×</button>
+    </div>
+    <div class="route-tabs">
+      <button class="route-tab active" id="tab-time">⚡ 최단시간</button>
+      <button class="route-tab" id="tab-transfer">🔄 최소환승</button>
+    </div>
+    <div id="route-cards" class="route-cards-wrap"></div>
+    <div id="kakao-result"></div>
+    <div class="result-footer">
+      <button class="footer-btn secondary" id="reroute-btn">다른 역 검색</button>
+      <button class="footer-btn primary" id="open-gmaps-btn">구글맵에서 열기 ↗</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ===================================================
+   LINE COLORS (badge display)
+   =================================================== */
+const LINE_COLORS = {
+  M: '#e60012', T: '#8a3089', Y: '#0e7ec4', S: '#e85298',
+  K: '#9a6c1a', I: '#f59500', C: '#149a47', N: '#83cc28', P: '#4ac1d2',
+  JR: '#004896', HK: '#9e4a18', HS: '#e50042', KH: '#0080c6',
+  NK: '#00a0c0', KT: '#ff6600', MN: '#a06030', KN: '#009ac7'
+};
+const LINE_LABELS = {
+  M:'M', T:'T', Y:'Y', S:'S', K:'K', I:'I', C:'C', N:'N', P:'P',
+  JR:'JR', HK:'阪急', HS:'阪神', KH:'京阪', NK:'南海', KT:'近鉄', MN:'MN', KN:'中之島'
+};
+
+/* ===================================================
+   STATIONS DATABASE
+   x, y = % position on the map image (approx.)
+   q = Google Maps search query (English)
+   =================================================== */
+const STATIONS = [
+  // === Midosuji (M) — red ===
+  { id: 'shinosaka',     ko: '신오사카',            ja: '新大阪',         q: 'Shin-Osaka Station Osaka',                    lines: ['M','JR'],      x: 49.0, y: 22.0 },
+  { id: 'nishinakajima', ko: '니시나카지마미나미카타', ja: '西中島南方',    q: 'Nishinakajima-Minamigata Station Osaka',      lines: ['M','HK'],      x: 43.0, y: 26.0 },
+  { id: 'nakatsu',       ko: '나카츠',              ja: '中津',           q: 'Nakatsu Station Osaka Metro Midosuji',        lines: ['M'],           x: 44.0, y: 28.5 },
+  { id: 'umeda',         ko: '우메다',              ja: '梅田',           q: 'Umeda Station Osaka Metro',                   lines: ['M'],           x: 43.5, y: 33.0 },
+  { id: 'yodoyabashi',   ko: '요도야바시',          ja: '淀屋橋',         q: 'Yodoyabashi Station Osaka',                   lines: ['M','KH'],      x: 46.5, y: 39.0 },
+  { id: 'honmachi',      ko: '혼마치',              ja: '本町',           q: 'Honmachi Station Osaka',                      lines: ['M','Y','C'],   x: 47.0, y: 44.5 },
+  { id: 'shinsaibashi',  ko: '신사이바시',          ja: '心斎橋',         q: 'Shinsaibashi Station Osaka',                  lines: ['M','N'],       x: 46.5, y: 50.5 },
+  { id: 'namba',         ko: '난바',                ja: '難波',           q: 'Namba Station Osaka',                         lines: ['M','Y','S'],   x: 46.0, y: 55.5 },
+  { id: 'daikokucho',    ko: '다이코쿠초',          ja: '大国町',         q: 'Daikokucho Station Osaka',                    lines: ['M','Y'],       x: 44.5, y: 61.0 },
+  { id: 'doubutsuenmae', ko: '도부츠엔마에',        ja: '動物園前',       q: 'Dobutsuen-mae Station Osaka',                 lines: ['M','K'],       x: 45.0, y: 65.0 },
+  { id: 'tennoji',       ko: '덴노지',              ja: '天王寺',         q: 'Tennoji Station Osaka',                       lines: ['M','T','JR'],  x: 53.5, y: 69.0 },
+  { id: 'showacho',      ko: '쇼와초',              ja: '昭和町',         q: 'Showacho Station Osaka Midosuji',             lines: ['M'],           x: 53.5, y: 74.0 },
+  { id: 'nishitanabe',   ko: '니시타나베',          ja: '西田辺',         q: 'Nishitanabe Station Osaka',                   lines: ['M'],           x: 52.5, y: 79.0 },
+
+  // === Tanimachi (T) — purple ===
+  { id: 'miyakojima',    ko: '미야코지마',          ja: '都島',           q: 'Miyakojima Station Osaka',                    lines: ['T'],           x: 58.0, y: 26.0 },
+  { id: 'tenjin6',       ko: '텐진바시6초메',       ja: '天神橋筋六丁目', q: 'Tenjimbashisuji-rokuchome Station Osaka',     lines: ['T','K','HK'],  x: 52.0, y: 28.5 },
+  { id: 'nakazakicho',   ko: '나카자키초',          ja: '中崎町',         q: 'Nakazakicho Station Osaka',                   lines: ['T'],           x: 50.0, y: 30.5 },
+  { id: 'higashiumeda',  ko: '히가시우메다',        ja: '東梅田',         q: 'Higashi-Umeda Station Osaka',                 lines: ['T'],           x: 47.5, y: 32.5 },
+  { id: 'minamimorimachi', ko: '미나미모리마치',    ja: '南森町',         q: 'Minami-morimachi Station Osaka',              lines: ['T','K'],       x: 52.0, y: 35.5 },
+  { id: 'tenmabashi',    ko: '텐마바시',            ja: '天満橋',         q: 'Temmabashi Station Osaka',                    lines: ['T','KH','KN'], x: 57.0, y: 40.5 },
+  { id: 'tanimachi4',    ko: '다니마치4초메',       ja: '谷町四丁目',     q: 'Tanimachi 4-chome Station Osaka',             lines: ['T','C'],       x: 55.0, y: 44.5 },
+  { id: 'tanimachi6',    ko: '다니마치6초메',       ja: '谷町六丁目',     q: 'Tanimachi 6-chome Station Osaka',             lines: ['T','N'],       x: 56.0, y: 50.5 },
+  { id: 'tanimachi9',    ko: '다니마치9초메',       ja: '谷町九丁目',     q: 'Tanimachi 9-chome Station Osaka',             lines: ['T','S'],       x: 58.0, y: 55.5 },
+  { id: 'shitennoji',    ko: '시텐노지마에',        ja: '四天王寺前夕陽ヶ丘', q: 'Shitennoji-mae Yuhigaoka Station Osaka', lines: ['T'],           x: 57.0, y: 61.0 },
+  { id: 'tsuruhashi',    ko: '츠루하시',            ja: '鶴橋',           q: 'Tsuruhashi Station Osaka',                    lines: ['T','JR','KT'], x: 65.5, y: 56.0 },
+
+  // === Yotsubashi (Y) — blue ===
+  { id: 'nishiumeda',    ko: '니시우메다',          ja: '西梅田',         q: 'Nishi-Umeda Station Osaka',                   lines: ['Y'],           x: 40.0, y: 34.0 },
+  { id: 'higobashi',     ko: '히고바시',            ja: '肥後橋',         q: 'Higobashi Station Osaka',                     lines: ['Y'],           x: 41.5, y: 39.0 },
+  { id: 'yotsubashi',    ko: '요츠바시',            ja: '四ツ橋',         q: 'Yotsubashi Station Osaka',                    lines: ['Y'],           x: 43.5, y: 51.0 },
+
+  // === Sennichimae (S) — pink ===
+  { id: 'nodahanshin',   ko: '노다한신',            ja: '野田阪神',       q: 'Noda-Hanshin Station Osaka',                  lines: ['S','HS'],      x: 30.0, y: 41.0 },
+  { id: 'tamagawa',      ko: '다마가와',            ja: '玉川',           q: 'Tamagawa Station Osaka Sennichimae',          lines: ['S'],           x: 33.0, y: 44.0 },
+  { id: 'sakuragawa',    ko: '사쿠라가와',          ja: '桜川',           q: 'Sakuragawa Station Osaka',                    lines: ['S','HS'],      x: 39.0, y: 53.5 },
+  { id: 'nipponbashi',   ko: '닛폰바시',            ja: '日本橋',         q: 'Nipponbashi Station Osaka',                   lines: ['S','K'],       x: 51.5, y: 55.5 },
+  { id: 'imazato_s',     ko: '이마자토',            ja: '今里',           q: 'Imazato Station Osaka Sennichimae',           lines: ['S','I'],       x: 68.0, y: 55.5 },
+
+  // === Sakaisuji (K) — brown ===
+  { id: 'ogimachi',      ko: '오기마치',            ja: '扇町',           q: 'Ogimachi Station Osaka',                      lines: ['K'],           x: 51.5, y: 32.0 },
+  { id: 'sakaisujihommachi', ko: '사카이스지혼마치', ja: '堺筋本町',      q: 'Sakaisuji-Hommachi Station Osaka',            lines: ['K','C'],       x: 51.5, y: 44.5 },
+  { id: 'nagahoribashi', ko: '나가호리바시',        ja: '長堀橋',         q: 'Nagahoribashi Station Osaka',                 lines: ['K','N'],       x: 51.5, y: 50.5 },
+  { id: 'ebisucho',      ko: '에비스초',            ja: '恵美須町',       q: 'Ebisucho Station Osaka',                      lines: ['K'],           x: 49.5, y: 62.0 },
+
+  // === Chuo (C) — green ===
+  { id: 'cosmosquare',   ko: '코스모스퀘어',        ja: 'コスモスクエア', q: 'Cosmosquare Station Osaka',                   lines: ['C','P'],       x: 16.0, y: 54.0 },
+  { id: 'osakako',       ko: '오사카항',            ja: '大阪港',         q: 'Osakako Station Osaka',                       lines: ['C'],           x: 22.0, y: 49.5 },
+  { id: 'bentencho',     ko: '벤텐초',              ja: '弁天町',         q: 'Bentencho Station Osaka',                     lines: ['C','JR'],      x: 30.0, y: 47.5 },
+  { id: 'kujo',          ko: '쿠조',                ja: '九条',           q: 'Kujo Station Osaka',                          lines: ['C','HS'],      x: 36.0, y: 47.5 },
+  { id: 'awaza',         ko: '아와자',              ja: '阿波座',         q: 'Awaza Station Osaka',                         lines: ['C','Y'],       x: 41.5, y: 47.5 },
+  { id: 'morinomiya',    ko: '모리노미야',          ja: '森ノ宮',         q: 'Morinomiya Station Osaka',                    lines: ['C','N','JR'],  x: 63.0, y: 47.5 },
+
+  // === Nagahori (N) — light green ===
+  { id: 'taisho',        ko: '다이쇼',              ja: '大正',           q: 'Taisho Station Osaka',                        lines: ['N','JR'],      x: 29.0, y: 53.5 },
+  { id: 'kyobashi',      ko: '쿄바시',              ja: '京橋',           q: 'Kyobashi Station Osaka',                      lines: ['N','JR','KH'], x: 64.0, y: 36.5 },
+
+  // === Imazatosuji (I) — orange ===
+  { id: 'imazato_i',     ko: '이마자토(I선)',       ja: '今里',           q: 'Imazato Station Osaka Imazatosuji',           lines: ['I'],           x: 68.0, y: 54.5 },
+
+  // === JR Loop & other JR ===
+  { id: 'osaka',         ko: '오사카',              ja: '大阪',           q: 'Osaka Station JR',                            lines: ['JR'],          x: 44.5, y: 30.5 },
+  { id: 'fukushima',     ko: '후쿠시마',            ja: '福島',           q: 'Fukushima Station Osaka JR',                  lines: ['JR','HS'],     x: 37.5, y: 36.5 },
+  { id: 'noda_jr',       ko: '노다',                ja: '野田',           q: 'Noda Station JR Osaka',                       lines: ['JR'],          x: 30.0, y: 41.5 },
+  { id: 'nishikujo',     ko: '니시쿠조',            ja: '西九条',         q: 'Nishikujo Station Osaka',                     lines: ['JR','HS'],     x: 28.5, y: 44.5 },
+  { id: 'shinimamiya',   ko: '신이마미야',          ja: '新今宮',         q: 'Shin-Imamiya Station Osaka',                  lines: ['JR','NK'],     x: 47.0, y: 74.0 },
+  { id: 'tenma',         ko: '텐마',                ja: '天満',           q: 'Temma Station Osaka',                         lines: ['JR'],          x: 51.5, y: 30.5 },
+  { id: 'sakuranomiya',  ko: '사쿠라노미야',        ja: '桜ノ宮',         q: 'Sakuranomiya Station Osaka',                  lines: ['JR'],          x: 56.5, y: 33.5 },
+  { id: 'universalcity', ko: '유니버설시티',        ja: 'ユニバーサルシティ', q: 'Universal-city Station Osaka',           lines: ['JR'],          x: 22.0, y: 46.5 },
+
+  // === Hankyu (HK) ===
+  { id: 'umeda_hk',      ko: '한큐 우메다',         ja: '阪急梅田',       q: 'Osaka-Umeda Station Hankyu',                  lines: ['HK'],          x: 43.0, y: 29.5 },
+  { id: 'juso',          ko: '주소',                ja: '十三',           q: 'Juso Station Hankyu Osaka',                   lines: ['HK'],          x: 40.0, y: 22.5 },
+
+  // === Hanshin (HS) ===
+  { id: 'umeda_hs',      ko: '한신 우메다',         ja: '阪神梅田',       q: 'Osaka-Umeda Station Hanshin',                 lines: ['HS'],          x: 41.0, y: 31.5 },
+  { id: 'osakananba',    ko: '오사카난바',          ja: '大阪難波',       q: 'Osaka Namba Station',                         lines: ['HS','KT'],     x: 48.0, y: 57.0 },
+
+  // === Nankai (NK) ===
+  { id: 'namba_nk',      ko: '난바(난카이)',        ja: '難波',           q: 'Namba Station Nankai Osaka',                  lines: ['NK'],          x: 47.0, y: 57.0 },
+  { id: 'tengachaya',    ko: '텐가차야',            ja: '天下茶屋',       q: 'Tengachaya Station Osaka',                    lines: ['NK','K'],      x: 44.5, y: 79.0 },
+  { id: 'kansaiairport', ko: '간사이공항',          ja: '関西空港',       q: 'Kansai International Airport Station Osaka',  lines: ['NK','JR'],     x: 13.0, y: 93.0 },
+
+  // === Keihan Nakanoshima (KN) ===
+  { id: 'naniwabashi',   ko: '나니와바시',           ja: 'なにわ橋',       q: 'Naniwabashi Station Keihan Osaka',            lines: ['KN'],          x: 54.0, y: 41.5 },
+  { id: 'oebashi',       ko: '오에바시',             ja: '大江橋',         q: 'Oebashi Station Keihan Osaka',                lines: ['KN'],          x: 50.0, y: 41.5 },
+  { id: 'watanabebashi', ko: '와타나베바시',         ja: '渡辺橋',         q: 'Watanabebashi Station Keihan Osaka',          lines: ['KN'],          x: 45.5, y: 41.5 },
+  { id: 'nakanoshima',   ko: '나카노시마',           ja: '中之島',         q: 'Nakanoshima Station Keihan Osaka',            lines: ['KN'],          x: 40.5, y: 42.5 },
+
+  // === Monorail (MN) ===
+  { id: 'senrichuo',     ko: '센리츄오',            ja: '千里中央',       q: 'Senri-Chuo Station Osaka',                    lines: ['MN'],          x: 24.0, y: 12.0 },
+  { id: 'bampaku',       ko: '반파쿠키넨코엔',      ja: '万博記念公園',   q: 'Banpaku-kinen-koen Station Osaka',            lines: ['MN'],          x: 60.0, y: 8.0  }
+];
+
+/* ===================================================
+   STATE
+   =================================================== */
+const state = {
+  from: null,
+  to: null,
+  activeInput: 'from',
+  zoom: 1,
+  routeMode: 'time',
+  routes: [],
+  selectedRoute: 0
+};
+const stationById = Object.fromEntries(STATIONS.map(s => [s.id, s]));
+
+/* ===================================================
+   LINE NAMES (Korean display)
+   =================================================== */
+const LINE_NAMES_KO = {
+  M:'미도스지선', T:'타니마치선', Y:'요츠바시선', S:'센니치마에선',
+  K:'사카이스지선', I:'이마자토스지선', C:'츄오선', N:'나가호리선',
+  P:'뉴트람', JR:'오사카순환선', HK:'한큐선', HS:'한신선',
+  KH:'케이한선', NK:'난카이선', KT:'킨테츠선', MN:'모노레일', KN:'케이한나카노시마선', WALK:'도보'
+};
+
+/* ===================================================
+   EDGE DATA  [fromId, toId, lineCode, minutes, interStops]
+   =================================================== */
+const EDGES_RAW = [
+  // Midosuji (M)
+  ['shinosaka','nishinakajima','M',2,0],['nishinakajima','nakatsu','M',2,0],
+  ['nakatsu','umeda','M',2,0],['umeda','yodoyabashi','M',3,1],
+  ['yodoyabashi','honmachi','M',2,0],['honmachi','shinsaibashi','M',2,0],
+  ['shinsaibashi','namba','M',2,0],['namba','daikokucho','M',2,0],
+  ['daikokucho','doubutsuenmae','M',2,0],['doubutsuenmae','tennoji','M',3,1],
+  ['tennoji','showacho','M',2,0],['showacho','nishitanabe','M',2,0],
+  // Tanimachi (T)
+  ['miyakojima','tenjin6','T',3,1],['tenjin6','nakazakicho','T',2,0],
+  ['nakazakicho','higashiumeda','T',2,0],['higashiumeda','minamimorimachi','T',2,0],
+  ['minamimorimachi','tenmabashi','T',3,1],['tenmabashi','tanimachi4','T',2,0],
+  ['tanimachi4','tanimachi6','T',2,0],['tanimachi6','tanimachi9','T',2,0],
+  ['tanimachi9','shitennoji','T',2,0],['shitennoji','tennoji','T',3,1],
+  ['tennoji','tsuruhashi','T',4,2],
+  // Yotsubashi (Y)
+  ['nishiumeda','higobashi','Y',2,0],['higobashi','awaza','Y',2,0],
+  ['awaza','yotsubashi','Y',2,0],['yotsubashi','namba','Y',2,0],
+  ['namba','daikokucho','Y',2,0],
+  // Sennichimae (S)
+  ['nodahanshin','tamagawa','S',2,0],['tamagawa','kujo','S',2,0],
+  ['kujo','sakuragawa','S',2,0],['sakuragawa','namba','S',2,0],
+  ['namba','nipponbashi','S',2,0],['nipponbashi','tanimachi9','S',2,0],
+  ['tanimachi9','imazato_s','S',5,3],
+  // Sakaisuji (K)
+  ['tenjin6','ogimachi','K',2,0],['ogimachi','minamimorimachi','K',2,0],
+  ['minamimorimachi','sakaisujihommachi','K',3,1],
+  ['sakaisujihommachi','nagahoribashi','K',2,0],
+  ['nagahoribashi','nipponbashi','K',2,0],
+  ['nipponbashi','ebisucho','K',2,0],['ebisucho','doubutsuenmae','K',2,0],
+  ['doubutsuenmae','tengachaya','K',4,2],
+  // Chuo (C)
+  ['cosmosquare','osakako','C',4,1],['osakako','bentencho','C',4,1],
+  ['bentencho','kujo','C',3,0],['kujo','awaza','C',2,0],
+  ['awaza','honmachi','C',2,0],['honmachi','tanimachi4','C',2,0],
+  ['tanimachi4','morinomiya','C',4,2],
+  // Nagahori (N)
+  ['taisho','namba','N',6,3],['namba','shinsaibashi','N',2,0],
+  ['shinsaibashi','nagahoribashi','N',2,0],
+  ['nagahoribashi','morinomiya','N',4,2],['morinomiya','kyobashi','N',4,2],
+  // JR Osaka Loop
+  ['osaka','tenma','JR',2,0],['tenma','sakuranomiya','JR',2,0],
+  ['sakuranomiya','kyobashi','JR',2,0],['kyobashi','tennoji','JR',8,3],
+  ['osaka','fukushima','JR',2,0],['fukushima','noda_jr','JR',2,0],
+  ['noda_jr','nishikujo','JR',3,0],['nishikujo','universalcity','JR',3,0],
+  ['nishikujo','bentencho','JR',2,0],['bentencho','tennoji','JR',10,4],
+  ['tennoji','shinimamiya','JR',3,1],['osaka','shinosaka','JR',5,1],
+  // Hankyu (HK)
+  ['umeda_hk','tenjin6','HK',4,2],['umeda_hk','juso','HK',5,2],
+  ['juso','nishinakajima','HK',4,1],
+  // Hanshin (HS)
+  ['umeda_hs','fukushima','HS',3,1],['fukushima','nishikujo','HS',3,1],
+  ['nishikujo','nodahanshin','HS',5,2],['nodahanshin','sakuragawa','HS',4,2],
+  ['sakuragawa','osakananba','HS',3,1],
+  // Nankai (NK)
+  ['kansaiairport','shinimamiya','NK',36,12],
+  ['shinimamiya','namba_nk','NK',4,1],
+  ['namba_nk','tengachaya','NK',4,2],['tengachaya','shinimamiya','NK',3,1],
+  // Kintetsu (KT)
+  ['osakananba','tsuruhashi','KT',5,2],
+  // Keihan (KH)
+  ['yodoyabashi','tenmabashi','KH',3,1],['tenmabashi','kyobashi','KH',4,2],
+  // Keihan Nakanoshima (KN)
+  ['tenmabashi','naniwabashi','KN',2,0],
+  ['naniwabashi','oebashi','KN',2,0],
+  ['oebashi','watanabebashi','KN',2,0],
+  ['watanabebashi','nakanoshima','KN',2,0],
+  // Walk/transfer connections
+  ['higobashi','watanabebashi','WALK',5,0],  // 히고바시↔와타나베바시 실제 ~300m
+  ['oebashi','yodoyabashi','WALK',5,0],
+  ['namba','namba_nk','WALK',4,0],['namba','osakananba','WALK',3,0],
+  ['namba_nk','osakananba','WALK',2,0],
+  ['shinimamiya','tennoji','WALK',8,0],
+  ['umeda','osaka','WALK',4,0],['umeda','umeda_hk','WALK',3,0],
+  ['umeda','umeda_hs','WALK',3,0],['umeda','nishiumeda','WALK',4,0],
+  ['umeda','higashiumeda','WALK',3,0],
+  ['osaka','umeda_hk','WALK',4,0],['osaka','umeda_hs','WALK',4,0],
+  ['tennoji','tsuruhashi','WALK',5,0],
+];
+
+const graph = {};
+for (const s of STATIONS) graph[s.id] = [];
+for (const [a, b, line, min, stops] of EDGES_RAW) {
+  if (!graph[a]) graph[a] = [];
+  if (!graph[b]) graph[b] = [];
+  graph[a].push({ to:b, line, min, stops });
+  graph[b].push({ to:a, line, min, stops });
+}
+
+/* ===================================================
+   FARE CALCULATION
+   =================================================== */
+// 히고바시↔나카노시마 1km=15분 실측 기준으로 보정 (100m당 1분30초)
+const COORD_TO_MIN = 4.1;
+
+function opOfLine(line) {
+  if (['M','T','Y','S','K','I','C','N','P'].includes(line)) return 'metro';
+  if (line === 'JR') return 'jr';
+  if (line === 'HK' || line === 'HS') return 'hanky_shin';
+  if (line === 'KH' || line === 'KN') return 'keihan';
+  if (line === 'NK') return 'nankai';
+  if (line === 'KT') return 'kintetsu';
+  if (line === 'MN') return 'monorail';
+  return 'metro';
+}
+
+function fareForStops(op, stops) {
+  switch (op) {
+    case 'metro':
+      return stops <= 3 ? 180 : stops <= 6 ? 240 : stops <= 9 ? 280 : stops <= 12 ? 320 : 360;
+    case 'jr':
+      return stops <= 3 ? 140 : stops <= 7 ? 200 : stops <= 12 ? 250 : 330;
+    case 'hanky_shin':
+      return stops <= 2 ? 160 : stops <= 5 ? 220 : stops <= 8 ? 280 : 340;
+    case 'keihan':
+      return stops <= 2 ? 160 : stops <= 5 ? 230 : stops <= 9 ? 290 : 350;
+    case 'nankai':
+      return stops <= 2 ? 160 : stops <= 5 ? 230 : stops <= 10 ? 330 : 600;
+    case 'kintetsu':
+      return stops <= 2 ? 220 : stops <= 5 ? 290 : 360;
+    case 'monorail': return 230;
+    default: return 200;
+  }
+}
+
+function calcFare(segs) {
+  const opStops = {};
+  for (const s of segs) {
+    if (s.line === 'WALK') continue;
+    const op = opOfLine(s.line);
+    opStops[op] = (opStops[op] || 0) + s.stops;
+  }
+  return Object.entries(opStops).reduce((sum, [op, stops]) => sum + fareForStops(op, stops), 0);
+}
+
+function nearbyStations(stId, maxMin) {
+  maxMin = maxMin || 15;
+  const base = stationById[stId];
+  return STATIONS
+    .filter(s => s.id !== stId)
+    .map(s => ({ id: s.id, walkMin: Math.round(Math.hypot(s.x - base.x, s.y - base.y) * COORD_TO_MIN) }))
+    .filter(s => s.walkMin > 0 && s.walkMin <= maxMin)
+    .sort((a, b) => a.walkMin - b.walkMin)
+    .slice(0, 6);
+}
+
+function routeKey(segs) {
+  return segs.filter(s => s.line !== 'WALK').map(s => s.line).join('-');
+}
+
+function findRoutes(fromId, toId, mode) {
+  const candidates = [];
+
+  function addCandidate(path, fromWalk, toWalk) {
+    if (!path || path.length < 2) return;
+    const segs = buildSegments(path);
+    const transitMin = segs.reduce((a, s) => a + s.min, 0);
+    const totalMin = (fromWalk ? fromWalk.min : 0) + transitMin + (toWalk ? toWalk.min : 0);
+    const transfers = Math.max(0, segs.filter(s => s.line !== 'WALK').length - 1);
+    candidates.push({ segs, totalMin, transfers, fromWalk: fromWalk || null, toWalk: toWalk || null });
+  }
+
+  addCandidate(dijkstra(fromId, toId, mode), null, null);
+
+  for (const nb of nearbyStations(fromId)) {
+    addCandidate(
+      dijkstra(nb.id, toId, mode),
+      { depKo: stationById[fromId].ko, boardKo: stationById[nb.id].ko, min: nb.walkMin },
+      null
+    );
+  }
+
+  for (const nb of nearbyStations(toId)) {
+    addCandidate(
+      dijkstra(fromId, nb.id, mode),
+      null,
+      { alightKo: stationById[nb.id].ko, arrKo: stationById[toId].ko, min: nb.walkMin }
+    );
+  }
+
+  // 최소환승 모드: 환승 횟수 우선 정렬 → 동률이면 시간순
+  // 최단시간 모드: 시간 우선 정렬
+  if (mode === 'transfer') {
+    candidates.sort((a, b) => a.transfers !== b.transfers ? a.transfers - b.transfers : a.totalMin - b.totalMin);
+  } else {
+    candidates.sort((a, b) => a.totalMin - b.totalMin);
+  }
+  const seen = new Set();
+  const result = [];
+  for (const c of candidates) {
+    const k = routeKey(c.segs);
+    if (!seen.has(k)) {
+      seen.add(k);
+      result.push(c);
+      if (result.length >= 3) break;
+    }
+  }
+  return result;
+}
+
+function pad2(n) { return String(n).padStart(2,'0'); }
+
+function dijkstra(fromId, toId, mode) {
+  // mode='time': 시간 최소화 (환승 패널티 3분)
+  // mode='transfer': 환승 최소화 (환승 패널티 120분 = 사실상 환승 회피)
+  const transferPenalty = (mode === 'transfer') ? 120 : 3;
+
+  const dist = {}, prev = {}, prevEdge = {};
+  for (const s of STATIONS) dist[s.id] = Infinity;
+  dist[fromId] = 0;
+  const visited = new Set();
+  const pq = [[0, fromId]];
+  while (pq.length) {
+    pq.sort((a,b) => a[0]-b[0]);
+    const [d, u] = pq.shift();
+    if (visited.has(u)) continue;
+    visited.add(u);
+    if (u === toId) break;
+    for (const e of (graph[u]||[])) {
+      const prevLine = prevEdge[u]?.line;
+      const isTransfer = prevLine && prevLine !== e.line && e.line !== 'WALK' && prevLine !== 'WALK';
+      const penalty = isTransfer ? transferPenalty : 0;
+      const nd = d + e.min + penalty;
+      if (nd < dist[e.to]) {
+        dist[e.to] = nd;
+        prev[e.to] = u;
+        prevEdge[e.to] = e;
+        pq.push([nd, e.to]);
+      }
+    }
+  }
+  if (dist[toId] === Infinity) return null;
+  const path = [];
+  let cur = toId;
+  while (cur !== fromId) {
+    path.unshift({ node: cur, edge: prevEdge[cur] });
+    cur = prev[cur];
+    if (!cur) return null;
+  }
+  path.unshift({ node: fromId, edge: null });
+  return path;
+}
+
+function buildSegments(path) {
+  if (!path || path.length < 2) return [];
+  const segs = [];
+  let i = 1;
+  while (i < path.length) {
+    const line = path[i].edge.line;
+    const startNode = path[i-1].node;
+    let totalMin = 0, totalStops = 0, j = i;
+    while (j < path.length && path[j].edge.line === line) {
+      totalMin += path[j].edge.min;
+      totalStops += path[j].edge.stops + 1;
+      j++;
+    }
+    segs.push({ line, from: startNode, to: path[j-1].node, min: totalMin, stops: totalStops,
+                nodes: path.slice(i-1, j).map(p => p.node) });
+    i = j;
+  }
+  return segs;
+}
+
+/* ===================================================
+   ELEMENTS
+   =================================================== */
+const els = {
+  intro:       document.getElementById('intro'),
+  fromInput:   document.getElementById('from-input'),
+  toInput:     document.getElementById('to-input'),
+  fromClear:   document.getElementById('from-clear'),
+  toClear:     document.getElementById('to-clear'),
+  swapBtn:     document.getElementById('swap-btn'),
+  suggestions: document.getElementById('suggestions'),
+  mapOverlay:  document.getElementById('map-overlay'),
+  mapImg:      document.getElementById('map-img'),
+  mapInner:    document.getElementById('map-inner'),
+  mapScroll:   document.getElementById('map-scroll'),
+  missingMap:  document.getElementById('missing-map'),
+  goBtn:       document.getElementById('go-btn'),
+  resetBtn:    document.getElementById('reset-btn'),
+  zoomIn:      document.getElementById('zoom-in'),
+  zoomOut:     document.getElementById('zoom-out'),
+  zoomReset:   document.getElementById('zoom-reset'),
+  resultPanel: document.getElementById('result-panel'),
+  kakaoResult: document.getElementById('kakao-result'),
+  tabTime:     document.getElementById('tab-time'),
+  tabTransfer: document.getElementById('tab-transfer'),
+  odFrom:      document.getElementById('od-from'),
+  odTo:        document.getElementById('od-to'),
+  closeResult: document.getElementById('close-result'),
+  rerouteBtn:  document.getElementById('reroute-btn'),
+  openGmaps:   document.getElementById('open-gmaps-btn'),
+  helpBanner:  document.getElementById('help-banner'),
+  routeCards:  document.getElementById('route-cards')
+};
+
+/* image error handler */
+els.mapImg.addEventListener('error', () => {
+  els.missingMap.style.display = 'block';
+  els.mapImg.style.display = 'none';
+  els.mapOverlay.style.display = 'none';
+});
+
+/* ===================================================
+   HOTSPOTS
+   =================================================== */
+function renderHotspots() {
+  els.mapOverlay.innerHTML = '';
+  for (const s of STATIONS) {
+    const dot = document.createElement('div');
+    dot.className = 'hotspot';
+    dot.style.left = s.x + '%';
+    dot.style.top  = s.y + '%';
+    dot.dataset.id = s.id;
+    const lbl = document.createElement('span');
+    lbl.className = 'hotspot-label';
+    lbl.textContent = s.ko;
+    dot.appendChild(lbl);
+    els.mapOverlay.appendChild(dot);
+  }
+}
+
+/* 가장 가까운 역 찾기 */
+function findNearest(tapX, tapY) {
+  let best = null, minD = Infinity;
+  for (const s of STATIONS) {
+    const d = Math.hypot(s.x - tapX, s.y - tapY);
+    if (d < minD) { minD = d; best = s; }
+  }
+  return minD <= 10 ? best : null;   // 10% 이내
+}
+
+/* 선택 피드백 토스트 */
+function showToast(name, cx, cy) {
+  document.getElementById('tap-tip')?.remove();
+  const el = document.createElement('div');
+  el.id = 'tap-tip';
+  el.className = 'tap-toast';
+  el.textContent = name;
+  const ar = document.getElementById('app').getBoundingClientRect();
+  el.style.left = (cx - ar.left) + 'px';
+  el.style.top  = (cy - ar.top)  + 'px';
+  document.getElementById('app').appendChild(el);
+  setTimeout(() => el.remove(), 1400);
+}
+
+/* Overlay 단일 탭 핸들러 */
+let _tapStart = null;
+els.mapOverlay.addEventListener('touchstart', e => {
+  if (e.touches.length === 1)
+    _tapStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+}, { passive: true });
+els.mapOverlay.addEventListener('touchend', e => {
+  if (!_tapStart) return;
+  const t = e.changedTouches[0];
+  const moved = Math.hypot(t.clientX - _tapStart.x, t.clientY - _tapStart.y);
+  _tapStart = null;
+  if (moved > 12) return;          // 스크롤이면 무시
+  handleTap(t.clientX, t.clientY);
+}, { passive: true });
+els.mapOverlay.addEventListener('click', e => {
+  if (e.detail === 0) return;      // 터치에서 발생한 click 중복 방지
+  handleTap(e.clientX, e.clientY);
+});
+
+function handleTap(cx, cy) {
+  const r = els.mapOverlay.getBoundingClientRect();
+  const tx = (cx - r.left) / r.width  * 100;
+  const ty = (cy - r.top)  / r.height * 100;
+  const s = findNearest(tx, ty);
+  if (!s) return;
+  onHotspotTap(s.id);
+  showToast(s.ko, cx, cy);
+}
+
+function updateHotspotVisuals() {
+  for (const node of els.mapOverlay.children) {
+    node.classList.remove('from','to');
+    if (node.dataset.id === state.from) node.classList.add('from');
+    if (node.dataset.id === state.to)   node.classList.add('to');
+  }
+}
+
+/* ===================================================
+   HOTSPOT TAP
+   =================================================== */
+function onHotspotTap(id) {
+  if (state.from === id) { state.from = null; refreshAll(); return; }
+  if (state.to   === id) { state.to   = null; refreshAll(); return; }
+  if (!state.from) {
+    state.from = id;
+    state.activeInput = 'to';
+  } else if (!state.to) {
+    state.to = id;
+    state.activeInput = 'from';
+  } else {
+    if (state.activeInput === 'from') state.from = id;
+    else state.to = id;
+  }
+  refreshAll();
+}
+
+/* ===================================================
+   SEARCH
+   =================================================== */
+function normalize(s) {
+  return (s || '').toString().toLowerCase().replace(/\s|역|駅|station/gi, '');
+}
+function searchStations(query) {
+  const q = normalize(query);
+  if (!q) return STATIONS.slice(0, 12);
+  return STATIONS.filter(s =>
+    normalize(s.ko).includes(q) ||
+    normalize(s.ja).includes(q) ||
+    normalize(s.q).includes(q)
+  ).slice(0, 20);
+}
+
+function renderSuggestions(items, slot) {
+  els.suggestions.innerHTML = '';
+  if (!items.length) { els.suggestions.classList.remove('show'); return; }
+  for (const s of items) {
+    const row = document.createElement('div');
+    row.className = 'sugg-item';
+    const lineBadges = s.lines.map(l =>
+      `<span class="lb" style="background:${LINE_COLORS[l]||'#888'}">${LINE_LABELS[l]||l}</span>`
+    ).join('');
+    row.innerHTML =
+      `<span class="sugg-ko">${s.ko}</span>` +
+      `<span class="sugg-ja">${s.ja}</span>` +
+      `<span class="sugg-lines">${lineBadges}</span>`;
+    row.addEventListener('mousedown', (e) => { e.preventDefault(); pickStation(s.id, slot); });
+    row.addEventListener('touchstart', (e) => { e.preventDefault(); pickStation(s.id, slot); }, { passive: false });
+    els.suggestions.appendChild(row);
+  }
+  els.suggestions.classList.add('show');
+}
+
+function pickStation(id, slot) {
+  if (slot === 'from') state.from = id;
+  else                  state.to   = id;
+  els.suggestions.classList.remove('show');
+  if (slot === 'from' && !state.to) {
+    state.activeInput = 'to';
+    setTimeout(() => els.toInput.focus({ preventScroll: true }), 50);
+  }
+  refreshAll();
+}
+
+/* ===================================================
+   REFRESH
+   =================================================== */
+function refreshAll() {
+  if (state.from) {
+    els.fromInput.value = stationById[state.from].ko;
+    els.fromInput.classList.add('filled');
+  } else {
+    els.fromInput.value = '';
+    els.fromInput.classList.remove('filled');
+  }
+  if (state.to) {
+    els.toInput.value = stationById[state.to].ko;
+    els.toInput.classList.add('filled');
+  } else {
+    els.toInput.value = '';
+    els.toInput.classList.remove('filled');
+  }
+  updateHotspotVisuals();
+
+  if (state.from && state.to && state.from !== state.to) {
+    els.goBtn.disabled = false;
+    els.goBtn.textContent = `${stationById[state.from].ko} → ${stationById[state.to].ko} 경로 보기`;
+  } else if (state.from && state.to && state.from === state.to) {
+    els.goBtn.disabled = true;
+    els.goBtn.textContent = '출발과 도착이 같습니다';
+  } else if (state.from) {
+    els.goBtn.disabled = true;
+    els.goBtn.textContent = '도착역을 선택해주세요';
+  } else if (state.to) {
+    els.goBtn.disabled = true;
+    els.goBtn.textContent = '출발역을 선택해주세요';
+  } else {
+    els.goBtn.disabled = true;
+    els.goBtn.textContent = '출발 · 도착을 선택해주세요';
+  }
+}
+
+/* ===================================================
+   GOOGLE MAPS EXTERNAL (for "open in app" button)
+   =================================================== */
+function gmapQuery(s) { return s.q || (s.ja + '駅 大阪'); }
+function gmapExternalURL(from, to) {
+  const o = encodeURIComponent(gmapQuery(from));
+  const d = encodeURIComponent(gmapQuery(to));
+  return `https://www.google.com/maps/dir/?api=1&origin=${o}&destination=${d}&travelmode=transit`;
+}
+
+/* ===================================================
+   KAKAO SUBWAY-STYLE RESULT RENDERER
+   =================================================== */
+function renderKakaoResult() {
+  if (!state.from || !state.to || state.from === state.to) return;
+  const f = stationById[state.from], t = stationById[state.to];
+  els.odFrom.textContent = f.ko;
+  els.odTo.textContent = t.ko;
+
+  state.routes = findRoutes(state.from, state.to, state.routeMode);
+  state.selectedRoute = 0;
+
+  if (!state.routes.length) {
+    els.routeCards.innerHTML = '';
+    els.kakaoResult.innerHTML = `
+      <div class="kr-no-route">
+        <div style="font-size:44px;margin-bottom:14px">🚫</div>
+        <div style="font-weight:700;color:#444;font-size:15px">직접 연결 경로 없음</div>
+        <div style="margin-top:8px;font-size:12px">아래 버튼으로 구글맵에서 확인해보세요</div>
+      </div>`;
+    els.resultPanel.classList.add('show');
+    return;
+  }
+
+  renderRouteCards();
+  renderRouteDetail(0);
+  els.resultPanel.classList.add('show');
+}
+
+function renderRouteCards() {
+  els.routeCards.innerHTML = '';
+  state.routes.forEach((route, i) => {
+    const fare = calcFare(route.segs);
+    const transitSegs = route.segs.filter(s => s.line !== 'WALK');
+    const transfers = Math.max(0, transitSegs.length - 1);
+    const chips = transitSegs.map(s =>
+      `<span class="rc-chip" style="background:${LINE_COLORS[s.line]||'#888'}">${LINE_LABELS[s.line]||s.line}</span>`
+    ).join('<span class="rc-arr">›</span>');
+    const walkNote = route.fromWalk
+      ? `🚶${route.fromWalk.min}분 후 탑승`
+      : route.toWalk
+      ? `🚶${route.toWalk.min}분 도보 포함`
+      : '';
+    const card = document.createElement('div');
+    card.className = 'route-card' + (i === 0 ? ' selected' : '');
+    card.innerHTML =
+      `<div class="rc-time">${route.totalMin}<span class="rc-min">분</span></div>` +
+      `<div class="rc-fare">약 ¥${fare}</div>` +
+      `<div class="rc-meta">${transfers > 0 ? `환승 ${transfers}회` : '직통'}${walkNote ? ' · ' + walkNote : ''}</div>` +
+      `<div class="rc-chips">${chips}</div>`;
+    card.addEventListener('click', () => selectRoute(i));
+    els.routeCards.appendChild(card);
+  });
+}
+
+function selectRoute(idx) {
+  state.selectedRoute = idx;
+  document.querySelectorAll('.route-card').forEach((c, i) => c.classList.toggle('selected', i === idx));
+  renderRouteDetail(idx);
+}
+
+function renderRouteDetail(idx) {
+  const route = state.routes[idx];
+  const segs = route.segs;
+  const totalMin = route.totalMin;
+  const fare = calcFare(segs);
+  const transitSegs = segs.filter(s => s.line !== 'WALK');
+  const transferCnt = Math.max(0, transitSegs.length - 1);
+  const now = new Date();
+  const depTime = `${now.getHours()}:${pad2(now.getMinutes())}`;
+  const arrDate = new Date(now.getTime() + totalMin * 60000);
+  const arrTime = `${arrDate.getHours()}:${pad2(arrDate.getMinutes())}`;
+  const transitMin = segs.reduce((a, s) => a + s.min, 0);
+  const chips = segs.map(seg => {
+    if (seg.line === 'WALK') return `<span class="kr-chip-walk"></span>`;
+    const w = Math.max(18, Math.round(seg.min / Math.max(1, transitMin) * 160));
+    return `<span class="kr-chip" style="background:${LINE_COLORS[seg.line]||'#888'};width:${w}px"></span>`;
+  }).join('');
+
+  let html = `
+    <div class="kr-summary">
+      <div class="kr-total-time">${totalMin}<sup>분</sup></div>
+      <span class="kr-fare-badge">약 ¥${fare}</span>
+      <div class="kr-meta">${depTime} 출발 &nbsp;·&nbsp; ${arrTime} 도착 예정 &nbsp;·&nbsp; ${transferCnt > 0 ? `환승 ${transferCnt}회` : '직통'}</div>
+      <div class="kr-chips">${chips}</div>
+    </div>
+    <div class="kr-timeline">`;
+
+  if (route.fromWalk) {
+    html += `
+      <div class="kr-tl-item kr-walk-item">
+        <div class="kr-tl-dot" style="border-color:#ff6b00;border-width:3px"></div>
+        <div class="kr-tl-station dep">${route.fromWalk.depKo}</div>
+        <div class="kr-walk-body">
+          <div class="kr-walk-label">🚶 도보 ${route.fromWalk.min}분 → ${route.fromWalk.boardKo}</div>
+        </div>
+      </div>`;
+  }
+
+  for (let i = 0; i < segs.length; i++) {
+    const seg = segs[i];
+    const fromSt = stationById[seg.from];
+    const color = LINE_COLORS[seg.line] || '#888';
+    const lineName = LINE_NAMES_KO[seg.line] || seg.line;
+    if (seg.line === 'WALK') {
+      html += `
+        <div class="kr-tl-item kr-walk-item">
+          <div class="kr-walk-body">
+            <div class="kr-walk-label">🚶 도보 ${seg.min}분 &nbsp;·&nbsp; 환승</div>
+          </div>
+        </div>`;
+    } else {
+      const isFirst = !route.fromWalk && (i === 0 || segs.slice(0, i).every(s => s.line === 'WALK'));
+      const dotColor = isFirst ? '#ff6b00' : color;
+      const segId = `seg-st-${idx}-${i}`;
+      // 중간역 목록 (출발역 제외, 도착역 포함)
+      const midNodes = seg.nodes ? seg.nodes.slice(1) : [];
+      const stationListHtml = midNodes.map(nid => {
+        const st = stationById[nid];
+        return `<div class="seg-st-row">
+          <span class="seg-st-dot" style="background:${color}"></span>
+          <span class="seg-st-name">${st ? st.ko : nid}</span>
+        </div>`;
+      }).join('');
+      const hasMiddle = midNodes.length > 0;
+      html += `
+        <div class="kr-tl-item">
+          <div class="kr-tl-dot ${isFirst ? 'dep' : 'xfr'}" style="border-color:${dotColor}"></div>
+          <div class="kr-tl-station ${isFirst ? 'dep' : ''}">${fromSt.ko}</div>
+          <div class="kr-seg-body" style="border-color:${color}">
+            <div class="kr-seg-info">
+              <span class="kr-seg-badge" style="background:${color}">${lineName}</span>
+              <span class="kr-seg-stops">${seg.stops}개 역</span>
+              <span class="kr-seg-dot">·</span>
+              <span class="kr-seg-time">${seg.min}분</span>
+            </div>
+            ${hasMiddle ? `<button class="seg-expand-btn" onclick="toggleStations('${segId}', this, ${midNodes.length})">▼ 경유역 보기 (${midNodes.length}개)</button>
+            <div class="seg-stations" id="${segId}">${stationListHtml}</div>` : ''}
+          </div>
+        </div>`;
+    }
+  }
+
+  const lastSeg = segs[segs.length - 1];
+  const arrSt = stationById[lastSeg.to];
+  html += `
+      <div class="kr-tl-item">
+        <div class="kr-tl-dot arr"></div>
+        <div class="kr-tl-station arr">${arrSt.ko} 도착</div>
+      </div>`;
+
+  if (route.toWalk) {
+    html += `
+      <div class="kr-tl-item kr-walk-item">
+        <div class="kr-walk-body">
+          <div class="kr-walk-label">🚶 도보 ${route.toWalk.min}분 → ${route.toWalk.arrKo}</div>
+        </div>
+      </div>`;
+  }
+
+  html += `</div><div style="height:20px"></div>`;
+  els.kakaoResult.innerHTML = html;
+}
+
+function toggleStations(id, btn, count) {
+  const el = document.getElementById(id);
+  const isOpen = el.classList.toggle('open');
+  btn.textContent = isOpen ? `▲ 접기` : `▼ 경유역 보기 (${count}개)`;
+}
+
+function hideResult() {
+  els.resultPanel.classList.remove('show');
+}
+
+/* ===================================================
+   RESET
+   =================================================== */
+function resetAll() {
+  state.from = null;
+  state.to = null;
+  state.activeInput = 'from';
+  state.routeMode = 'time';
+  els.tabTime.classList.add('active');
+  els.tabTransfer.classList.remove('active');
+  hideResult();
+  refreshAll();
+}
+
+/* ===================================================
+   ZOOM
+   =================================================== */
+function applyZoom(animate) {
+  if (!animate) els.mapInner.style.transition = 'none';
+  els.mapInner.style.width = Math.round(state.zoom * 100) + '%';
+  if (!animate) requestAnimationFrame(() => { els.mapInner.style.transition = ''; });
+}
+
+function applyZoomCentered(oldZoom) {
+  const scroller = els.mapScroll;
+  const centerX = scroller.scrollLeft + scroller.clientWidth / 2;
+  const centerY = scroller.scrollTop + scroller.clientHeight / 2;
+  const ratio = state.zoom / oldZoom;
+
+  els.mapInner.style.transition = 'width 0.2s ease';
+  els.mapInner.style.width = Math.round(state.zoom * 100) + '%';
+
+  requestAnimationFrame(() => {
+    scroller.scrollLeft = centerX * ratio - scroller.clientWidth / 2;
+    scroller.scrollTop  = centerY * ratio - scroller.clientHeight / 2;
+  });
+}
+
+els.zoomIn.addEventListener('click', () => {
+  const old = state.zoom;
+  state.zoom = Math.min(4, +(state.zoom + 0.5).toFixed(1));
+  applyZoomCentered(old);
+});
+els.zoomOut.addEventListener('click', () => {
+  const old = state.zoom;
+  state.zoom = Math.max(0.8, +(state.zoom - 0.5).toFixed(1));
+  applyZoomCentered(old);
+});
+els.zoomReset.addEventListener('click', () => { state.zoom = 1; applyZoom(true); });
+
+/* Pinch zoom */
+let pinch = null;
+els.mapScroll.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    pinch = { d: Math.hypot(dx, dy), z: state.zoom };
+  }
+}, { passive: true });
+els.mapScroll.addEventListener('touchmove', (e) => {
+  if (e.touches.length === 2 && pinch) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const d = Math.hypot(dx, dy);
+    state.zoom = Math.max(0.8, Math.min(4, pinch.z * (d / pinch.d)));
+    applyZoom(false);
+    e.preventDefault();
+  }
+}, { passive: false });
+els.mapScroll.addEventListener('touchend', () => { pinch = null; });
+
+/* ===================================================
+   INPUT WIRING
+   =================================================== */
+function wireInput(inputEl, slot) {
+  inputEl.addEventListener('focus', () => {
+    state.activeInput = slot;
+    renderSuggestions(searchStations(inputEl.value), slot);
+  });
+  inputEl.addEventListener('input', () => {
+    state.activeInput = slot;
+    renderSuggestions(searchStations(inputEl.value), slot);
+  });
+  inputEl.addEventListener('blur', () => {
+    setTimeout(() => els.suggestions.classList.remove('show'), 200);
+  });
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const items = searchStations(inputEl.value);
+      if (items.length) pickStation(items[0].id, slot);
+    }
+  });
+}
+wireInput(els.fromInput, 'from');
+wireInput(els.toInput, 'to');
+
+els.fromClear.addEventListener('click', () => { state.from = null; refreshAll(); els.fromInput.focus(); });
+els.toClear.addEventListener('click',   () => { state.to   = null; refreshAll(); els.toInput.focus(); });
+els.swapBtn.addEventListener('click', () => {
+  [state.from, state.to] = [state.to, state.from];
+  refreshAll();
+});
+
+/* ===================================================
+   BUTTONS
+   =================================================== */
+els.goBtn.addEventListener('click', () => { if (!els.goBtn.disabled) renderKakaoResult(); });
+els.resetBtn.addEventListener('click', resetAll);
+els.closeResult.addEventListener('click', hideResult);
+els.rerouteBtn.addEventListener('click', hideResult);
+
+/* Route tabs */
+function setRouteTab(mode) {
+  state.routeMode = mode;
+  els.tabTime.classList.toggle('active', mode === 'time');
+  els.tabTransfer.classList.toggle('active', mode === 'transfer');
+  renderKakaoResult();
+}
+els.tabTime.addEventListener('click', () => setRouteTab('time'));
+els.tabTransfer.addEventListener('click', () => setRouteTab('transfer'));
+els.openGmaps.addEventListener('click', () => {
+  if (!state.from || !state.to) return;
+  const f = stationById[state.from], t = stationById[state.to];
+  window.open(gmapExternalURL(f, t), '_blank');
+});
+
+/* ===================================================
+   INTRO DISMISS
+   =================================================== */
+function dismissIntro() {
+  els.intro.classList.add('hide');
+  setTimeout(() => { els.intro.style.display = 'none'; }, 600);
+  els.helpBanner.classList.add('show');
+  setTimeout(() => els.helpBanner.classList.remove('show'), 3500);
+}
+els.intro.addEventListener('click', dismissIntro);
+els.intro.addEventListener('touchstart', (e) => { e.preventDefault(); dismissIntro(); }, { passive: false });
+
+/* ===================================================
+   INIT
+   =================================================== */
+renderHotspots();
+refreshAll();
+applyZoom(false); // 초기 CSS var 설정
+</script>
+
+</body>
+</html>
