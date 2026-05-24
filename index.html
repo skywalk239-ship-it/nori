@@ -790,7 +790,499 @@
   <div id="map-section">
     <div id="map-scroll">
       <div id="map-inner">
-        <div id="map-img"></div>
+        <div id="map-img">
+        <svg viewBox="0 0 1200 1140" width="100%" xmlns="http://www.w3.org/2000/svg">
+<defs><style>
+.kl{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;font-size:10px;fill:#1a1a1a}
+.kls{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;font-size:9px;fill:#999}
+.klb{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;font-size:11px;font-weight:700;fill:#111}
+.klg{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;font-size:10px;fill:#888}
+.jp{font-family:'Hiragino Sans','Yu Gothic',sans-serif;font-size:8px;fill:#bbb}
+.leg{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;font-size:10px;fill:#222}
+.ttl{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;font-size:17px;font-weight:700;fill:#111}
+.tk{stroke:#ccc;stroke-width:0.8;fill:none}
+.da{stroke:#bbb;stroke-width:1.3;fill:none;stroke-dasharray:4,3}
+</style></defs>
+<rect width="1200" height="1140" fill="#fff"/>
+<text class="ttl" x="20" y="26">오사카 주요 노선도</text>
+<text class="kls" x="20" y="40">여행자용 · 환승역 강조판</text>
+
+<!-- 범례 -->
+<rect x="16" y="46" width="1168" height="72" rx="6" fill="#f7f7f7" stroke="#e0e0e0" stroke-width="0.7"/>
+<g transform="translate(24,57)">
+  <rect x="0"   y="0" width="16" height="6" rx="3" fill="#F68B1F"/><text class="leg" x="20" y="8">JR 순환선</text>
+  <rect x="120" y="0" width="16" height="6" rx="3" fill="#E5171F"/><text class="leg" x="140" y="8">미도스지선</text>
+  <rect x="255" y="0" width="16" height="6" rx="3" fill="#522886"/><text class="leg" x="275" y="8">다니마치선</text>
+  <rect x="390" y="0" width="16" height="6" rx="3" fill="#0070BC"/><text class="leg" x="410" y="8">요쓰바시선</text>
+  <rect x="525" y="0" width="16" height="6" rx="3" fill="#E85B0B"/><text class="leg" x="545" y="8">주오선</text>
+  <rect x="635" y="0" width="16" height="6" rx="3" fill="#E9558A"/><text class="leg" x="655" y="8">센니치마에선</text>
+  <rect x="780" y="0" width="16" height="6" rx="3" fill="#1BAE4F"/><text class="leg" x="800" y="8">나가호리선</text>
+  <rect x="910" y="0" width="16" height="6" rx="3" fill="#0072BC"/><text class="leg" x="930" y="8">난카이선</text>
+  <rect x="1040" y="0" width="16" height="6" rx="3" fill="#7B5B00"/><text class="leg" x="1060" y="8">한큐선</text>
+</g>
+<g transform="translate(24,75)">
+  <!-- 게이한 나카노시마선: 얇은 회색 점선 -->
+  <line x1="0" y1="3" x2="22" y2="3" stroke="#888" stroke-width="2" stroke-dasharray="5,3"/><text class="leg" x="26" y="8" style="fill:#666">게이한 나카노시마선</text>
+  <!-- 게이한 본선: 굵은 회색 점선 -->
+  <line x1="190" y1="3" x2="212" y2="3" stroke="#555" stroke-width="3" stroke-dasharray="6,3"/><text class="leg" x="216" y="8" style="fill:#444">게이한 본선</text>
+  <rect x="360" y="0" width="16" height="6" rx="3" fill="#E87B00"/><text class="leg" x="380" y="8">긴테쓰선</text>
+  <line x1="490" y1="3" x2="512" y2="3" stroke="#bbb" stroke-width="1.5" stroke-dasharray="4,3"/><text class="leg" x="516" y="8" style="fill:#888">동일역 환승</text>
+  <circle cx="640" cy="3" r="6" fill="#E5171F" opacity="0.3"/><circle cx="640" cy="3" r="6" fill="none" stroke="white" stroke-width="2"/><text class="leg" x="650" y="8">3선+ 환승(파이)</text>
+  <rect x="790" y="-4" width="12" height="12" rx="6" fill="none" stroke="#111" stroke-width="1.3"/><text class="leg" x="806" y="8">2선 환승(pill)</text>
+</g>
+
+<!--
+  순환선: cx=560 cy=530 r=205
+  정확 각도배치 (SVG, 시계방향, 0=3시):
+  오사카       270° → (560, 325)
+  후쿠시마     281° → x=560+205*cos281=560+39=599, y=530+205*sin281=530-201=329 → (599,329)
+  노다         259° → (521,329)
+  덴마         260°~근처 노다와 같은y → 더 세분화 필요
+  ---- 19개 역을 약 19° 간격으로 배치 ----
+  시작 덴노지=108°, 시계방향으로:
+  덴노지    108°: cos=-0.309,sin=+0.951 → (497,725)
+  데라다초   90°: cos=0,sin=1 → (560,735)
+  모모다니   72°: cos=+0.309,sin=+0.951 → (623,725)
+  쓰루하시   54°: cos=+0.588,sin=+0.809 → (681,696)
+  다마쓰쿠리 36°: cos=+0.809,sin=+0.588 → (726,651)
+  모리노미야 18°: cos=+0.951,sin=+0.309 → (755,593)
+  오사카조코엔 0°: cos=1,sin=0 → (765,530)
+  교바시    342°: cos=+0.951,sin=-0.309 → (755,467)
+  사쿠라노미야 324°: cos=+0.809,sin=-0.588 → (726,409)
+  덴마      306°: cos=+0.588,sin=-0.809 → (681,364)
+  오사카    288°: cos=+0.309,sin=-0.951 → (623,335)
+  후쿠시마  270°: cos=0,sin=-1 → (560,325)
+  노다      252°: cos=-0.309,sin=-0.951 → (497,335)
+  니시쿠조  234°: cos=-0.588,sin=-0.809 → (439,364)
+  벤텐초    216°: cos=-0.809,sin=-0.588 → (394,409)
+  다이쇼    198°: cos=-0.951,sin=-0.309 → (365,467)
+  아시하라바시 180°: cos=-1,sin=0 → (355,530)
+  이마미야  162°: cos=-0.951,sin=+0.309 → (365,593)
+  신이마미야 144°: cos=-0.809,sin=+0.588 → (394,651)
+  덴노지   back to 108° (126°도 가능하나 위와 같음)
+
+  즉 19개 역이 360°/19≈18.95° 간격
+-->
+
+<g transform="translate(0,130)">
+
+<!-- ═══════════════════════════════════
+  레이어1: 하위 노선선
+═══════════════════════════════════ -->
+<!-- 미도스지 x=560 -->
+<line x1="560" y1="50" x2="560" y2="890" stroke="#E5171F" stroke-width="6" stroke-linecap="round"/>
+<!-- 요쓰바시 x=460 -->
+<line x1="460" y1="190" x2="460" y2="770" stroke="#0070BC" stroke-width="5" stroke-linecap="round"/>
+<!-- 다니마치 x=655 -->
+<line x1="655" y1="110" x2="655" y2="870" stroke="#522886" stroke-width="5" stroke-linecap="round"/>
+<!-- 주오선 y=468 -->
+<line x1="78"  y1="468" x2="985" y2="468" stroke="#E85B0B" stroke-width="5" stroke-linecap="round"/>
+<!-- 나가호리 y=532 -->
+<line x1="200" y1="532" x2="930" y2="532" stroke="#1BAE4F" stroke-width="5" stroke-linecap="round"/>
+<!-- 센니치마에 y=616 수평+사선 -->
+<line x1="100" y1="616" x2="560" y2="616" stroke="#E9558A" stroke-width="5" stroke-linecap="round"/>
+<line x1="560" y1="616" x2="681" y2="696" stroke="#E9558A" stroke-width="5" stroke-linecap="round"/>
+<!-- 게이한 나카노시마선: 얇은 회색 점선 y=336 수평 -->
+<line x1="110" y1="336" x2="655" y2="336" stroke="#888" stroke-width="2" stroke-dasharray="5,3" stroke-linecap="round"/>
+<!-- 나카노시마선→덴마바시pill 수직연결 -->
+<line x1="655" y1="342" x2="655" y2="415" stroke="#888" stroke-width="2" stroke-dasharray="4,3"/>
+<!-- 게이한 본선: 굵은 회색 점선 y=384 수평 후 사선 교바시까지 -->
+<line x1="54"  y1="384" x2="655" y2="384" stroke="#555" stroke-width="3" stroke-dasharray="6,3" stroke-linecap="round"/>
+<line x1="655" y1="384" x2="755" y2="467" stroke="#555" stroke-width="3" stroke-dasharray="6,3" stroke-linecap="round"/>
+<!-- 게이한본선 교바시 이후: 교바시(755,467)→히라카타시→데마치야나기 우측으로 뻗음 -->
+<line x1="755" y1="467" x2="1060" y2="390" stroke="#555" stroke-width="3" stroke-dasharray="6,3" stroke-linecap="round"/>
+<!-- 한큐 y=172 점선 -->
+<line x1="560" y1="172" x2="985" y2="172" stroke="#7B5B00" stroke-width="4" stroke-dasharray="8,4" stroke-linecap="round"/>
+<line x1="560" y1="178" x2="560" y2="311" stroke="#bbb" stroke-width="1.3" stroke-dasharray="4,3"/>
+<!-- 난카이 x=305 -->
+<line x1="305" y1="950" x2="305" y2="572" stroke="#0072BC" stroke-width="5" stroke-linecap="round"/>
+<!-- 긴테쓰 점선 -->
+<line x1="560" y1="572" x2="681" y2="696" stroke="#E87B00" stroke-width="3.5" stroke-dasharray="7,4"/>
+<line x1="681" y1="696" x2="985" y2="468" stroke="#E87B00" stroke-width="3.5" stroke-dasharray="7,4"/>
+<line x1="985" y1="468" x2="1060" y2="424" stroke="#E87B00" stroke-width="3.5" stroke-dasharray="7,4" stroke-linecap="round"/>
+
+<!-- ═══════════════════════════════════
+  레이어2: JR 순환선 원
+═══════════════════════════════════ -->
+<circle cx="560" cy="530" r="205" fill="none" stroke="#F68B1F" stroke-width="9"/>
+<!-- 순환선 라벨 왼쪽 바깥 -->
+<text font-family="'Apple SD Gothic Neo','Noto Sans KR',sans-serif" font-size="11px" font-weight="700" fill="#D4720A" x="318" y="512" text-anchor="middle">JR 오사카</text>
+<text font-family="'Apple SD Gothic Neo','Noto Sans KR',sans-serif" font-size="11px" font-weight="700" fill="#D4720A" x="318" y="528" text-anchor="middle">순환선</text>
+
+<!-- 순환선 19개 역 원 (정확 좌표) -->
+<!-- 108° 덴노지 (497,725) → 파이로 대체 -->
+<!-- 90°  데라다초 (560,735) -->
+<circle cx="560" cy="735" r="5" fill="#F68B1F"/>
+<line x1="560" y1="741" x2="560" y2="758" class="tk"/><text class="kl" x="560" y="766" text-anchor="middle">데라다초</text>
+<!-- 72°  모모다니 (623,725) -->
+<circle cx="623" cy="725" r="5" fill="#F68B1F"/>
+<line x1="628" y1="721" x2="648" y2="710" class="tk"/><text class="kl" x="652" y="714" text-anchor="start">모모다니</text>
+<!-- 54°  쓰루하시 (681,696) → 파이로 대체 -->
+<!-- 36°  다마쓰쿠리 (726,651) -->
+<circle cx="726" cy="651" r="5" fill="#F68B1F"/>
+<line x1="732" y1="651" x2="752" y2="651" class="tk"/><text class="kl" x="756" y="655" text-anchor="start">다마쓰쿠리</text>
+<!-- 18°  모리노미야 (755,593) → 파이로 대체 -->
+<!-- 0°   오사카조코엔 (765,530) -->
+<circle cx="765" cy="530" r="5" fill="#F68B1F"/>
+<line x1="771" y1="530" x2="791" y2="530" class="tk"/><text class="kl" x="795" y="534" text-anchor="start">오사카조코엔</text>
+<!-- 342° 교바시 (755,467) → 파이로 대체 -->
+<!-- 324° 사쿠라노미야 (726,409) -->
+<circle cx="726" cy="409" r="5" fill="#F68B1F"/>
+<line x1="732" y1="405" x2="752" y2="393" class="tk"/><text class="kl" x="756" y="397" text-anchor="start">사쿠라노미야</text>
+<!-- 306° 덴마 (681,364) -->
+<circle cx="681" cy="364" r="5" fill="#F68B1F"/>
+<line x1="681" y1="358" x2="681" y2="340" class="tk"/><text class="kl" x="681" y="334" text-anchor="middle">덴마</text>
+<!-- 288° 오사카 (623,325) -->
+<circle cx="623" cy="325" r="7" fill="white" stroke="#F68B1F" stroke-width="2.5"/>
+<line x1="623" y1="317" x2="623" y2="299" class="tk"/><text class="kl" x="623" y="293" text-anchor="middle">오사카 (JR)</text>
+<!-- 270° 후쿠시마 (560,325) -->
+<circle cx="560" cy="325" r="5" fill="#F68B1F"/>
+<line x1="560" y1="317" x2="560" y2="299" class="tk"/><text class="kl" x="560" y="293" text-anchor="middle">후쿠시마</text>
+<!-- 252° 노다 (497,335) -->
+<circle cx="497" cy="335" r="5" fill="#F68B1F"/>
+<line x1="491" y1="331" x2="468" y2="318" class="tk"/><text class="kl" x="464" y="322" text-anchor="end">노다</text>
+<!-- 234° 니시쿠조 (439,364) -->
+<circle cx="439" cy="364" r="7" fill="white" stroke="#F68B1F" stroke-width="2.5"/>
+<line x1="432" y1="364" x2="408" y2="364" class="tk"/><text class="kl" x="404" y="368" text-anchor="end">니시쿠조</text>
+<!-- 216° 벤텐초 (394,409) → pill로 대체 -->
+<!-- 198° 다이쇼 (365,467) → pill로 대체 -->
+<!-- 180° 아시하라바시 (355,530) -->
+<circle cx="355" cy="530" r="5" fill="#F68B1F"/>
+<line x1="348" y1="530" x2="326" y2="530" class="tk"/><text class="kl" x="322" y="534" text-anchor="end">아시하라바시</text>
+<!-- 162° 이마미야 (365,593) -->
+<circle cx="365" cy="593" r="5" fill="#F68B1F"/>
+<line x1="358" y1="593" x2="334" y2="593" class="tk"/><text class="kl" x="330" y="597" text-anchor="end">이마미야</text>
+<!-- 144° 신이마미야 (394,651) → pill로 대체 -->
+
+<!-- ═══════════════════════════════════
+  레이어3: 파이/pill/역 원
+═══════════════════════════════════ -->
+
+<!-- 우메다 파이4 @ 560,325 → 오사카JR(623,325)와 별도위치이므로 미도스지선 위(x=560) -->
+<!-- 미도스지 우메다 y=325, JR오사카는 623,325 → 별도 역 -->
+<!-- 우메다파이를 560,325에 -->
+<g transform="translate(560,325)">
+  <path d="M0,0 L13,0 A13,13 0 0,1 0,13 Z" fill="#E5171F"/>
+  <path d="M0,0 L0,13 A13,13 0 0,1 -13,0 Z" fill="#522886"/>
+  <path d="M0,0 L-13,0 A13,13 0 0,1 0,-13 Z" fill="#0070BC"/>
+  <path d="M0,0 L0,-13 A13,13 0 0,1 13,0 Z" fill="#F68B1F"/>
+  <circle cx="0" cy="0" r="13" fill="none" stroke="white" stroke-width="2.5"/>
+</g>
+<line x1="547" y1="325" x2="524" y2="325" class="tk"/>
+<line x1="524" y1="325" x2="524" y2="307" class="tk"/>
+<text class="klb" x="520" y="305" text-anchor="end">우메다</text>
+<text class="jp"  x="520" y="316" text-anchor="end">梅田</text>
+<!-- 히가시우메다(655,325)→파이 점선 -->
+<line x1="573" y1="325" x2="642" y2="325" class="da"/>
+<!-- 니시우메다(460,325)→파이 점선 -->
+<line x1="547" y1="325" x2="473" y2="325" class="da"/>
+
+<!-- 히가시우메다 @ x=655,y=325 -->
+<circle cx="655" cy="325" r="6" fill="white" stroke="#522886" stroke-width="2.2"/>
+<line x1="655" y1="318" x2="655" y2="298" class="tk"/>
+<line x1="655" y1="298" x2="684" y2="298" class="tk"/>
+<text class="kl" x="688" y="302" text-anchor="start">히가시우메다</text>
+
+<!-- 니시우메다 @ x=460,y=325 -->
+<circle cx="460" cy="325" r="6" fill="white" stroke="#0070BC" stroke-width="2"/>
+<line x1="460" y1="318" x2="460" y2="298" class="tk"/>
+<line x1="460" y1="298" x2="429" y2="298" class="tk"/>
+<text class="kl" x="425" y="302" text-anchor="end">니시우메다</text>
+
+<!-- 혼마치 파이3 @ 560,468 -->
+<g transform="translate(560,468)">
+  <path d="M0,0 L13,0 A13,13 0 0,1 -6.5,11.3 Z" fill="#E5171F"/>
+  <path d="M0,0 L-6.5,11.3 A13,13 0 0,1 -6.5,-11.3 Z" fill="#0070BC"/>
+  <path d="M0,0 L-6.5,-11.3 A13,13 0 0,1 13,0 Z" fill="#E85B0B"/>
+  <circle cx="0" cy="0" r="13" fill="none" stroke="white" stroke-width="2.5"/>
+</g>
+<line x1="573" y1="468" x2="594" y2="468" class="tk"/>
+<line x1="594" y1="468" x2="594" y2="450" class="tk"/>
+<text class="klb" x="598" y="449" text-anchor="start">혼마치</text>
+<text class="jp"  x="598" y="460" text-anchor="start">本町</text>
+
+<!-- 신사이바시 pill @ 560,524 -->
+<g transform="translate(560,524)">
+  <rect x="-9" y="-10" width="18" height="20" rx="9" fill="white" stroke="#111" stroke-width="1.4"/>
+  <circle cx="0" cy="-3" r="4.5" fill="#E5171F"/>
+  <circle cx="0" cy="3" r="4.5" fill="#1BAE4F"/>
+</g>
+<line x1="569" y1="524" x2="594" y2="524" class="tk"/>
+<line x1="594" y1="524" x2="594" y2="506" class="tk"/>
+<text class="kl" x="598" y="505" text-anchor="start">신사이바시</text>
+<line x1="560" y1="532" x2="560" y2="534" class="da"/>
+
+<!-- 난바 파이4 @ 560,572 -->
+<g transform="translate(560,572)">
+  <path d="M0,0 L13,0 A13,13 0 0,1 0,13 Z" fill="#E5171F"/>
+  <path d="M0,0 L0,13 A13,13 0 0,1 -13,0 Z" fill="#0070BC"/>
+  <path d="M0,0 L-13,0 A13,13 0 0,1 0,-13 Z" fill="#E9558A"/>
+  <path d="M0,0 L0,-13 A13,13 0 0,1 13,0 Z" fill="#0072BC"/>
+  <circle cx="0" cy="0" r="13" fill="none" stroke="white" stroke-width="2.5"/>
+</g>
+<line x1="547" y1="572" x2="524" y2="572" class="tk"/>
+<line x1="524" y1="572" x2="524" y2="554" class="tk"/>
+<text class="klb" x="520" y="552" text-anchor="end">난바</text>
+<text class="jp"  x="520" y="563" text-anchor="end">難波</text>
+<line x1="547" y1="572" x2="318" y2="572" class="da"/>
+<line x1="560" y1="585" x2="560" y2="614" class="da"/>
+
+<!-- 덴노지 파이3 @ 497,725 -->
+<g transform="translate(497,725)">
+  <path d="M0,0 L13,0 A13,13 0 0,1 -6.5,11.3 Z" fill="#E5171F"/>
+  <path d="M0,0 L-6.5,11.3 A13,13 0 0,1 -6.5,-11.3 Z" fill="#F68B1F"/>
+  <path d="M0,0 L-6.5,-11.3 A13,13 0 0,1 13,0 Z" fill="#522886"/>
+  <circle cx="0" cy="0" r="13" fill="none" stroke="white" stroke-width="2.5"/>
+</g>
+<line x1="497" y1="738" x2="497" y2="756" class="tk"/>
+<text class="klb" x="497" y="766" text-anchor="middle">덴노지</text>
+<text class="jp"  x="497" y="777" text-anchor="middle">天王寺</text>
+<!-- 미도스지(560,725)→파이 점선 -->
+<line x1="510" y1="725" x2="554" y2="725" class="da"/>
+<!-- 다니마치(655,725)→파이 점선 -->
+<line x1="510" y1="725" x2="648" y2="725" class="da"/>
+
+<!-- 쓰루하시 파이3 @ 681,696 -->
+<g transform="translate(681,696)">
+  <path d="M0,0 L13,0 A13,13 0 0,1 -6.5,11.3 Z" fill="#F68B1F"/>
+  <path d="M0,0 L-6.5,11.3 A13,13 0 0,1 -6.5,-11.3 Z" fill="#E9558A"/>
+  <path d="M0,0 L-6.5,-11.3 A13,13 0 0,1 13,0 Z" fill="#E87B00"/>
+  <circle cx="0" cy="0" r="13" fill="none" stroke="white" stroke-width="2.5"/>
+</g>
+<line x1="694" y1="696" x2="714" y2="696" class="tk"/>
+<line x1="714" y1="696" x2="714" y2="678" class="tk"/>
+<text class="klb" x="718" y="677" text-anchor="start">쓰루하시</text>
+<text class="jp"  x="718" y="688" text-anchor="start">鶴橋</text>
+
+<!-- 모리노미야 파이3 @ 755,530 (원위 0°→18°: 755,593이 맞으나 주오/나가호리 교차는 x=790) -->
+<!-- 주오선(y=468)·나가호리(y=532) 교차점 @ 790: 파이를 790,500에 배치 -->
+<g transform="translate(805,500)">
+  <path d="M0,0 L13,0 A13,13 0 0,1 -6.5,11.3 Z" fill="#F68B1F"/>
+  <path d="M0,0 L-6.5,11.3 A13,13 0 0,1 -6.5,-11.3 Z" fill="#E85B0B"/>
+  <path d="M0,0 L-6.5,-11.3 A13,13 0 0,1 13,0 Z" fill="#1BAE4F"/>
+  <circle cx="0" cy="0" r="13" fill="none" stroke="white" stroke-width="2.5"/>
+</g>
+<line x1="805" y1="487" x2="805" y2="468" class="tk"/>
+<text class="klb" x="805" y="462" text-anchor="middle">모리노미야</text>
+<!-- JR모리노미야(755,593)→파이 점선 -->
+<line x1="759" y1="588" x2="801" y2="505" class="da"/>
+<!-- JR오사카조코엔(765,530)→파이 -->
+<line x1="771" y1="530" x2="799" y2="506" class="da"/>
+<!-- 나가호리(805,532)→파이 -->
+<line x1="805" y1="513" x2="805" y2="526" class="da"/>
+
+<!-- 교바시 파이3 @ 755,467 -->
+<g transform="translate(755,467)">
+  <path d="M0,0 L13,0 A13,13 0 0,1 -6.5,11.3 Z" fill="#F68B1F"/>
+  <path d="M0,0 L-6.5,11.3 A13,13 0 0,1 -6.5,-11.3 Z" fill="#1BAE4F"/>
+  <path d="M0,0 L-6.5,-11.3 A13,13 0 0,1 13,0 Z" fill="#555"/>
+  <circle cx="0" cy="0" r="13" fill="none" stroke="white" stroke-width="2.5"/>
+</g>
+<line x1="768" y1="467" x2="788" y2="467" class="tk"/>
+<line x1="788" y1="467" x2="788" y2="449" class="tk"/>
+<text class="klb" x="792" y="448" text-anchor="start">교바시</text>
+<text class="jp"  x="792" y="459" text-anchor="start">京橋</text>
+
+<!-- 벤텐초 pill @ 394,409 (216°) -->
+<g transform="translate(394,409)">
+  <rect x="-9" y="-10" width="18" height="20" rx="9" fill="white" stroke="#111" stroke-width="1.4"/>
+  <circle cx="0" cy="-3" r="4.5" fill="#F68B1F"/>
+  <circle cx="0" cy="3" r="4.5" fill="#E85B0B"/>
+</g>
+<line x1="394" y1="419" x2="394" y2="462" class="da"/>
+<line x1="385" y1="409" x2="362" y2="409" class="tk"/>
+<line x1="362" y1="409" x2="362" y2="391" class="tk"/>
+<text class="kl" x="358" y="389" text-anchor="end">벤텐초</text>
+<text class="jp" x="358" y="400" text-anchor="end">弁天町</text>
+
+<!-- 다이쇼 pill @ 365,467 (198°) -->
+<g transform="translate(365,467)">
+  <rect x="-9" y="-10" width="18" height="20" rx="9" fill="white" stroke="#111" stroke-width="1.4"/>
+  <circle cx="0" cy="-3" r="4.5" fill="#F68B1F"/>
+  <circle cx="0" cy="3" r="4.5" fill="#1BAE4F"/>
+</g>
+<line x1="356" y1="467" x2="333" y2="467" class="tk"/>
+<line x1="333" y1="467" x2="333" y2="449" class="tk"/>
+<text class="kl" x="329" y="447" text-anchor="end">다이쇼</text>
+<text class="jp" x="329" y="458" text-anchor="end">大正</text>
+<line x1="365" y1="478" x2="365" y2="526" class="da"/>
+
+<!-- 신이마미야 pill @ 394,651 (144°) -->
+<g transform="translate(394,651)">
+  <rect x="-9" y="-10" width="18" height="20" rx="9" fill="white" stroke="#111" stroke-width="1.4"/>
+  <circle cx="0" cy="-3" r="4.5" fill="#F68B1F"/>
+  <circle cx="0" cy="3" r="4.5" fill="#0072BC"/>
+</g>
+<line x1="385" y1="651" x2="318" y2="651" class="da"/>
+<line x1="385" y1="651" x2="362" y2="651" class="tk"/>
+<line x1="362" y1="651" x2="362" y2="669" class="tk"/>
+<text class="kl" x="358" y="679" text-anchor="end">신이마미야</text>
+
+<!-- 덴마바시 pill @ 655,425 -->
+<g transform="translate(655,425)">
+  <rect x="-9" y="-10" width="18" height="20" rx="9" fill="white" stroke="#111" stroke-width="1.4"/>
+  <circle cx="0" cy="-3" r="4.5" fill="#522886"/>
+  <circle cx="0" cy="3" r="4.5" fill="#555"/>
+</g>
+<line x1="664" y1="425" x2="685" y2="425" class="tk"/>
+<line x1="685" y1="425" x2="685" y2="407" class="tk"/>
+<text class="kl" x="689" y="406" text-anchor="start">덴마바시</text>
+<text class="jp" x="689" y="417" text-anchor="start">天満橋</text>
+
+<!-- 다니마치욘초메 pill @ 655,468 -->
+<g transform="translate(655,468)">
+  <rect x="-9" y="-10" width="18" height="20" rx="9" fill="white" stroke="#111" stroke-width="1.4"/>
+  <circle cx="0" cy="-3" r="4.5" fill="#522886"/>
+  <circle cx="0" cy="3" r="4.5" fill="#E85B0B"/>
+</g>
+<line x1="664" y1="468" x2="696" y2="468" class="tk"/>
+<line x1="696" y1="468" x2="696" y2="450" class="tk"/>
+<text class="kl" x="700" y="449" text-anchor="start">다니마치욘초메</text>
+<text class="jp" x="700" y="460" text-anchor="start">谷町四丁目</text>
+
+<!-- 이코마 pill @ 985,468 -->
+<g transform="translate(985,468)">
+  <rect x="-9" y="-10" width="18" height="20" rx="9" fill="white" stroke="#111" stroke-width="1.4"/>
+  <circle cx="0" cy="-3" r="4.5" fill="#E85B0B"/>
+  <circle cx="0" cy="3" r="4.5" fill="#E87B00"/>
+</g>
+<line x1="994" y1="468" x2="1014" y2="468" class="tk"/>
+<text class="kl" x="1018" y="472" text-anchor="start">이코마</text>
+<text class="jp" x="1018" y="483" text-anchor="start">生駒</text>
+
+<!-- ═══════════════ 일반 역 원 ═══════════════ -->
+<!-- 미도스지 x=560 -->
+<circle cx="560" cy="58"  r="6" fill="white" stroke="#E5171F" stroke-width="2.5"/>
+<line x1="568" y1="58"  x2="588" y2="58"  class="tk"/><text class="kl" x="592" y="62"  text-anchor="start">신오사카</text>
+<circle cx="560" cy="108" r="5" fill="white" stroke="#E5171F" stroke-width="2"/>
+<line x1="568" y1="108" x2="588" y2="108" class="tk"/><text class="kl" x="592" y="112" text-anchor="start">나카쓰</text>
+<circle cx="560" cy="390" r="5" fill="white" stroke="#E5171F" stroke-width="2"/>
+<line x1="568" y1="390" x2="588" y2="390" class="tk"/><text class="kl" x="592" y="394" text-anchor="start">요도야바시</text>
+<circle cx="560" cy="632" r="5" fill="white" stroke="#E5171F" stroke-width="2"/>
+<line x1="568" y1="632" x2="588" y2="632" class="tk"/><text class="kl" x="592" y="636" text-anchor="start">도부츠엔마에</text>
+<circle cx="560" cy="672" r="5" fill="white" stroke="#E5171F" stroke-width="2"/>
+<line x1="568" y1="672" x2="588" y2="672" class="tk"/><text class="kl" x="592" y="676" text-anchor="start">쇼와초</text>
+<circle cx="560" cy="800" r="5" fill="white" stroke="#E5171F" stroke-width="2"/>
+<line x1="568" y1="800" x2="588" y2="800" class="tk"/><text class="kl" x="592" y="804" text-anchor="start">나가이</text>
+<circle cx="560" cy="890" r="7" fill="white" stroke="#E5171F" stroke-width="2.5"/>
+<line x1="568" y1="890" x2="588" y2="890" class="tk"/><text class="kl" x="592" y="894" text-anchor="start">나카모즈</text>
+
+<!-- 다니마치 x=655 -->
+<circle cx="655" cy="118" r="6" fill="white" stroke="#522886" stroke-width="2"/>
+<line x1="663" y1="118" x2="683" y2="118" class="tk"/><text class="kl" x="687" y="122" text-anchor="start">다이니치</text>
+<circle cx="655" cy="370" r="5" fill="white" stroke="#522886" stroke-width="2"/>
+<line x1="663" y1="370" x2="683" y2="370" class="tk"/><text class="kl" x="687" y="374" text-anchor="start">덴진바시6초메</text>
+<circle cx="655" cy="532" r="5" fill="white" stroke="#522886" stroke-width="2"/>
+<line x1="663" y1="532" x2="683" y2="532" class="tk"/><text class="kl" x="687" y="536" text-anchor="start">다니마치로쿠초메</text>
+<circle cx="655" cy="594" r="5" fill="white" stroke="#522886" stroke-width="2"/>
+<line x1="663" y1="594" x2="683" y2="594" class="tk"/><text class="kl" x="687" y="598" text-anchor="start">다니마치큐초메</text>
+<circle cx="655" cy="780" r="5" fill="white" stroke="#522886" stroke-width="2"/>
+<line x1="663" y1="780" x2="683" y2="780" class="tk"/><text class="kl" x="687" y="784" text-anchor="start">아베노</text>
+<circle cx="655" cy="870" r="6" fill="white" stroke="#522886" stroke-width="2"/>
+<line x1="663" y1="870" x2="683" y2="870" class="tk"/><text class="kl" x="687" y="874" text-anchor="start">야오미나미</text>
+
+<!-- 요쓰바시 x=460 -->
+<circle cx="460" cy="502" r="5" fill="white" stroke="#0070BC" stroke-width="2"/>
+<line x1="452" y1="502" x2="432" y2="502" class="tk"/><text class="kl" x="428" y="506" text-anchor="end">요쓰바시</text>
+<circle cx="460" cy="646" r="5" fill="white" stroke="#0070BC" stroke-width="2"/>
+<line x1="452" y1="646" x2="432" y2="646" class="tk"/><text class="kl" x="428" y="650" text-anchor="end">다이코쿠초</text>
+<circle cx="460" cy="710" r="5" fill="white" stroke="#0070BC" stroke-width="2"/>
+<line x1="452" y1="710" x2="432" y2="710" class="tk"/><text class="kl" x="428" y="714" text-anchor="end">기시노사토</text>
+<circle cx="460" cy="770" r="6" fill="white" stroke="#0070BC" stroke-width="2"/>
+<line x1="452" y1="770" x2="432" y2="770" class="tk"/><text class="kl" x="428" y="774" text-anchor="end">스미노에코엔</text>
+
+<!-- 주오선 y=468 -->
+<circle cx="86"  cy="468" r="6" fill="white" stroke="#E85B0B" stroke-width="2"/>
+<line x1="86"  y1="460" x2="86"  y2="440" class="tk"/><text class="kl" x="86"  y="434" text-anchor="middle">코스모스퀘어</text>
+<circle cx="156" cy="468" r="5" fill="white" stroke="#E85B0B" stroke-width="2"/>
+<line x1="156" y1="460" x2="156" y2="440" class="tk"/><text class="kl" x="156" y="434" text-anchor="middle">오사카항</text>
+<circle cx="888" cy="468" r="5" fill="white" stroke="#E85B0B" stroke-width="2"/>
+<line x1="888" y1="460" x2="888" y2="440" class="tk"/><text class="kl" x="888" y="434" text-anchor="middle">나가타</text>
+
+<!-- 나가호리 y=532 -->
+<circle cx="208" cy="532" r="5" fill="white" stroke="#1BAE4F" stroke-width="2"/>
+<line x1="208" y1="524" x2="208" y2="504" class="tk"/><text class="kl" x="208" y="498" text-anchor="middle">돔마에치요자키</text>
+<circle cx="616" cy="532" r="5" fill="white" stroke="#1BAE4F" stroke-width="2"/>
+<line x1="616" y1="538" x2="616" y2="558" class="tk"/><text class="kl" x="616" y="568" text-anchor="middle">나가호리바시</text>
+<circle cx="930" cy="532" r="6" fill="white" stroke="#1BAE4F" stroke-width="2"/>
+<line x1="930" y1="524" x2="930" y2="504" class="tk"/><text class="kl" x="930" y="498" text-anchor="middle">쓰루미료쿠치</text>
+
+<!-- 센니치마에 y=616 -->
+<circle cx="108" cy="616" r="6" fill="white" stroke="#E9558A" stroke-width="2"/>
+<line x1="108" y1="608" x2="108" y2="588" class="tk"/><text class="kl" x="108" y="582" text-anchor="middle">노다한신</text>
+<circle cx="218" cy="616" r="5" fill="white" stroke="#E9558A" stroke-width="2"/>
+<line x1="218" y1="608" x2="218" y2="588" class="tk"/><text class="kl" x="218" y="582" text-anchor="middle">아와자</text>
+<circle cx="476" cy="616" r="5" fill="white" stroke="#E9558A" stroke-width="2"/>
+<line x1="476" y1="608" x2="476" y2="588" class="tk"/><text class="kl" x="476" y="582" text-anchor="middle">닛폰바시</text>
+<circle cx="560" cy="616" r="4" fill="white" stroke="#E9558A" stroke-width="1.5"/>
+
+<!-- 게이한 본선 y=384 -->
+<circle cx="62"  cy="384" r="6" fill="white" stroke="#555" stroke-width="2"/>
+<line x1="62"  y1="376" x2="62"  y2="356" class="tk"/><text class="klg" x="62"  y="350" text-anchor="middle">나카노시마(게이한)</text>
+<circle cx="560" cy="384" r="5" fill="white" stroke="#555" stroke-width="2"/>
+<line x1="560" y1="376" x2="560" y2="356" class="tk"/><text class="klg" x="560" y="350" text-anchor="middle">요도야바시</text>
+<line x1="560" y1="389" x2="560" y2="393" class="da"/>
+<circle cx="622" cy="384" r="5" fill="white" stroke="#555" stroke-width="2"/>
+<line x1="622" y1="376" x2="622" y2="356" class="tk"/><text class="klg" x="622" y="350" text-anchor="middle">기타하마</text>
+<!-- 덴마바시(게이한)@655,384→pill(655,425) 점선 -->
+<circle cx="655" cy="384" r="5" fill="white" stroke="#555" stroke-width="2"/>
+<line x1="655" y1="390" x2="655" y2="414" class="da"/>
+<!-- 게이한본선 교바시 이후 역 -->
+<circle cx="870" cy="422" r="5" fill="white" stroke="#555" stroke-width="2"/>
+<line x1="870" y1="414" x2="870" y2="394" class="tk"/><text class="klg" x="870" y="388" text-anchor="middle">히라카타시</text>
+<circle cx="966" cy="398" r="5" fill="white" stroke="#555" stroke-width="2"/>
+<line x1="966" y1="390" x2="966" y2="370" class="tk"/><text class="klg" x="966" y="364" text-anchor="middle">구즈하</text>
+<circle cx="1060" cy="390" r="7" fill="white" stroke="#555" stroke-width="2"/>
+<line x1="1060" y1="382" x2="1060" y2="362" class="tk"/><text class="klg" x="1060" y="356" text-anchor="middle">데마치야나기</text>
+
+<!-- 나카노시마선 y=336 역 원 (회색) -->
+<circle cx="118" cy="336" r="6" fill="white" stroke="#888" stroke-width="2"/>
+<line x1="118" y1="328" x2="118" y2="308" class="tk"/><text class="klg" x="118" y="302" text-anchor="middle">나카노시마</text>
+<circle cx="224" cy="336" r="5" fill="white" stroke="#888" stroke-width="2"/>
+<line x1="224" y1="328" x2="224" y2="308" class="tk"/><text class="klg" x="224" y="302" text-anchor="middle">와타나베바시</text>
+<circle cx="322" cy="336" r="5" fill="white" stroke="#888" stroke-width="2"/>
+<line x1="322" y1="328" x2="322" y2="308" class="tk"/><text class="klg" x="322" y="302" text-anchor="middle">오에바시</text>
+<circle cx="426" cy="336" r="5" fill="white" stroke="#888" stroke-width="2"/>
+<line x1="426" y1="328" x2="426" y2="308" class="tk"/><text class="klg" x="426" y="302" text-anchor="middle">나니와바시</text>
+<circle cx="528" cy="336" r="5" fill="white" stroke="#888" stroke-width="2"/>
+<line x1="528" y1="328" x2="528" y2="308" class="tk"/><text class="klg" x="528" y="302" text-anchor="middle">텐마바시</text>
+<circle cx="655" cy="336" r="5" fill="white" stroke="#888" stroke-width="2"/>
+
+<!-- 한큐 y=172 -->
+<circle cx="560" cy="172" r="6" fill="white" stroke="#7B5B00" stroke-width="2"/>
+<line x1="568" y1="172" x2="588" y2="172" class="tk"/>
+<text class="kl" x="592" y="176" text-anchor="start">오사카우메다 (한큐)</text>
+<circle cx="682" cy="172" r="5" fill="white" stroke="#7B5B00" stroke-width="2"/>
+<line x1="682" y1="164" x2="682" y2="144" class="tk"/><text class="kl" x="682" y="138" text-anchor="middle">아와지</text>
+<circle cx="985" cy="172" r="7" fill="white" stroke="#7B5B00" stroke-width="2"/>
+<line x1="985" y1="164" x2="985" y2="144" class="tk"/><text class="kl" x="985" y="138" text-anchor="middle">교토가와라마치</text>
+
+<!-- 난카이 x=305 -->
+<circle cx="305" cy="950" r="7" fill="white" stroke="#0072BC" stroke-width="2.5"/>
+<line x1="297" y1="950" x2="275" y2="950" class="tk"/><text class="klb" x="271" y="954" text-anchor="end">간사이공항</text>
+<circle cx="305" cy="895" r="5" fill="white" stroke="#0072BC" stroke-width="2"/>
+<line x1="297" y1="895" x2="275" y2="895" class="tk"/><text class="kl" x="271" y="899" text-anchor="end">린쿠타운</text>
+<circle cx="305" cy="832" r="5" fill="white" stroke="#0072BC" stroke-width="2"/>
+<line x1="297" y1="832" x2="275" y2="832" class="tk"/><text class="kl" x="271" y="836" text-anchor="end">이즈미사노</text>
+<circle cx="305" cy="772" r="5" fill="white" stroke="#0072BC" stroke-width="2"/>
+<line x1="297" y1="772" x2="275" y2="772" class="tk"/><text class="kl" x="271" y="776" text-anchor="end">기시와다</text>
+<circle cx="305" cy="710" r="5" fill="white" stroke="#0072BC" stroke-width="2"/>
+<line x1="297" y1="710" x2="275" y2="710" class="tk"/><text class="kl" x="271" y="714" text-anchor="end">텐가차야</text>
+<circle cx="305" cy="651" r="5" fill="white" stroke="#0072BC" stroke-width="2"/>
+<line x1="297" y1="651" x2="275" y2="651" class="tk"/><text class="kl" x="271" y="655" text-anchor="end">난카이 신이마미야</text>
+<circle cx="305" cy="572" r="5" fill="white" stroke="#0072BC" stroke-width="2"/>
+<line x1="297" y1="572" x2="275" y2="572" class="tk"/><text class="kl" x="271" y="576" text-anchor="end">난카이난바</text>
+
+<!-- 긴테쓰 -->
+<circle cx="618" cy="619" r="4" fill="white" stroke="#E87B00" stroke-width="1.5"/>
+<line x1="626" y1="619" x2="646" y2="619" class="tk"/><text class="kl" x="650" y="623" style="fill:#C06000">우에혼마치</text>
+<circle cx="1060" cy="424" r="7" fill="white" stroke="#E87B00" stroke-width="2"/>
+<line x1="1068" y1="424" x2="1088" y2="424" class="tk"/><text class="kl" x="1092" y="428" text-anchor="start">긴테쓰나라</text>
+
+<text class="kls" x="580" y="1060" text-anchor="middle">서(벤텐초) ← 지리적 방향 → 동(쓰루하시)　　점선 = 동일역 환승 또는 타사 노선</text>
+</g>
+</svg>
+        </div>
         <div id="map-overlay"></div>
       </div>
       <div id="missing-map" class="missing-map" style="display:none;">
@@ -851,349 +1343,106 @@ const LINE_LABELS = {
   JR:'JR', HK:'阪急', HS:'阪神', KH:'京阪', NK:'南海', KT:'近鉄', MN:'MN', KN:'中之島'
 };
 
-/* ===================================================
-   SVG METRO MAP RENDERER
-   Data from osaka_metro/metro-data.js (1600×1260 viewBox)
-   Paper theme. Coordinates → % = svgX/16, svgY/12.6
-   =================================================== */
-(function(){
-  const _S={};
-  const _s=(id,x,y,kr,lp,hidden)=>{_S[id]={x,y,kr:kr||'',lp:lp||'',hidden:!!hidden};};
-  // Midosuji
-  _s('M08',720,100,'센리추오'); _s('M09',720,150,'모모야마다이','left'); _s('M10',720,195,'료쿠치코엔','left');
-  _s('M11',720,240,'에사카','left'); _s('M13',720,295,'신오사카','left'); _s('M14',720,340,'니시나카지마','right');
-  _s('M15',720,385,'나카쓰','left'); _s('M16',720,430,'우메다','up'); _s('M17',720,490,'요도야바시','left');
-  _s('M18',720,600,''); _s('M19',720,660,''); _s('M20',720,720,''); _s('M21',720,765,''); _s('M22',720,815,'');
-  _s('M23',720,880,''); _s('M24',720,925,'쇼와초','left'); _s('M25',720,965,'니시타나베','left');
-  _s('M26',720,1005,'아비코','left'); _s('M27',720,1040,'기타하나다','left'); _s('M30',720,1080,'나카모즈','down');
-  // Tanimachi
-  _s('T11',1240,230,'다이니치','down'); _s('T12',1180,280,'모리구치','right');
-  _s('T13',1110,320,''); _s('T14',1050,340,'센바야시오미야','down'); _s('T15',990,355,'세키메다카도노','up-right');
-  _s('T16',930,365,'노에우치다이','down'); _s('T17',870,370,'미야코지마','up');
-  _s('T18',820,330,''); _s('T19',820,430,'히가시우메다','left'); _s('T20',820,490,'');
-  _s('T21',820,545,''); _s('T22',820,600,''); _s('T23',820,645,''); _s('T24',820,695,''); _s('T25',820,755,'시텐노지마에','down');
-  _s('T26',720,880,'','',true); _s('T27',770,925,'아베노'); _s('T28',820,960,'후미노사토','right');
-  _s('T29',870,995,'다나베'); _s('T30',920,1030,'고마가와나카노','right'); _s('T31',970,1060,'히라노');
-  _s('T32',1030,1090,'기레우리와리'); _s('T33',1090,1090,'데토'); _s('T34',1150,1090,'나가하라'); _s('T35',1210,1090,'야오미나미');
-  // Yotsubashi
-  _s('Y11',620,430,'니시우메다','left'); _s('Y12',600,490,'히고바시','right');
-  _s('Y13',620,600,''); _s('Y14',600,660,'요쓰바시','left'); _s('Y15',620,720,''); _s('Y16',620,765,'');
-  _s('Y17',600,820,'하나조노초','right'); _s('Y18',600,870,'기시노사토','right');
-  _s('Y19',600,920,'다마데','right'); _s('Y20',600,965,'기타카가야','left'); _s('Y21',600,1010,'');
-  // Sennichimae
-  _s('S11',360,530,'노다한신'); _s('S12',430,590,'다마가와');
-  _s('S13',500,660,''); _s('S14',590,720,''); _s('S15',660,720,'사쿠라가와','down');
-  _s('S16',720,720,''); _s('S17',770,720,'닛폰바시'); _s('S18',820,720,'');
-  _s('S19',880,750,'쓰루하시','right'); _s('S20',940,770,''); _s('S21',1010,800,'신후카에');
-  _s('S22',1080,825,'쇼지'); _s('S23',1150,850,'기타타쓰미'); _s('S24',1220,880,'미나미타쓰미');
-  // Sakaisuji
-  _s('K11',820,330,''); _s('K12',870,410,'오기마치','right');
-  _s('K13',820,490,''); _s('K14',870,545,'기타하마','up'); _s('K15',870,600,'');
-  _s('K16',800,645,''); _s('K17',770,720,''); _s('K18',770,770,'에비스초'); _s('K19',720,815,''); _s('K20',680,870,'');
-  // Imazatosuji
-  _s('I11',1110,170,'이타카노'); _s('I12',1110,240,'시미즈'); _s('I13',1110,320,'');
-  _s('I14',1110,420,'세키메세이이쿠'); _s('I15',1110,480,''); _s('I16',1110,555,'');
-  _s('I17',1080,640,'','',true); _s('I18',940,770,'');
-  // Chuo
-  _s('C10',130,745,''); _s('C11',200,715,'오사카코','down'); _s('C12',270,685,'아사시오바시');
-  _s('C13',340,670,'벤텐초'); _s('C14',410,660,'구조'); _s('C15',500,660,''); _s('C16',720,600,'');
-  _s('C17',870,600,''); _s('C18',820,600,''); _s('C19',970,600,'모리노미야','right');
-  _s('C20',1110,555,''); _s('C21',1180,555,'후카에바시','down'); _s('C22',1250,555,'다카이다'); _s('C23',1320,555,'나가타');
-  // Nagahori
-  _s('N11',380,800,'다이쇼'); _s('N12',460,760,'돔마에치요자키'); _s('N13',590,720,'');
-  _s('N14',660,690,'니시오하시','right'); _s('N15',720,660,''); _s('N16',800,645,'');
-  _s('N17',810,620,'마쓰야마치','up'); _s('N18',820,645,''); _s('N19',900,645,'다마쓰쿠리','down');
-  _s('N20',970,600,''); _s('N21',1030,550,'오사카비즈니스파크','right'); _s('N22',1080,510,'교바시');
-  _s('N23',1110,480,''); _s('N24',1170,440,'이마후쿠쓰루미','down');
-  _s('N25',1240,400,'요코즈쓰미','right'); _s('N26',1310,360,'쓰루미료쿠치','right'); _s('N27',1380,320,'가도마미나미','right');
-  // Nanko
-  _s('P09',130,755,''); _s('P10',100,825,'트레이드센터'); _s('P11',140,885,'나카후토');
-  _s('P12',200,935,'포트타운니시'); _s('P13',280,975,'포트타운히가시');
-  _s('P14',370,1000,'페리터미널'); _s('P15',480,1005,'난코히가시'); _s('P16',600,1010,'');
-  // JR Loop
-  _s('JL01',720,880,'','',true); _s('JL02',798,867,'데라다초','right'); _s('JL03',867,829,'모모다니','right');
-  _s('JL04',921,771,'쓰루하시','right'); _s('JL05',953,699,'다마쓰쿠리','right'); _s('JL06',959,620,'모리노미야','right');
-  _s('JL07',940,544,'오사카조코엔','down-right'); _s('JL08',897,477,'교바시','up');
-  _s('JL09',834,429,'사쿠라노미야','up'); _s('JL10',760,403,'덴마','up'); _s('JL11',680,403,'오사카','left');
-  _s('JL12',606,429,'후쿠시마','right'); _s('JL13',543,477,'노다','left');
-  _s('JL14',500,544,'니시쿠조','down-right'); _s('JL15',481,620,'벤텐초','left');
-  _s('JL16',487,699,'다이쇼','left'); _s('JL17',519,771,'아시하라바시','left');
-  _s('JL18',573,829,'이마미야','down'); _s('JL19',642,867,'신이마미야','down');
-  // Nankai
-  _s('NN01',700,750,''); _s('NN02',700,820,'이마미야에비스'); _s('NN03',600,880,''); _s('NN04',660,920,'');
-  _s('NN05',660,1100,'→ 와카야마 방면');
-  _s('NA01',700,750,''); _s('NA02',600,880,''); _s('NA03',660,920,'');
-  _s('NA04',660,990,'사카이','right'); _s('NA05',660,1040,'하고로모','right'); _s('NA06',660,1090,'이즈미오쓰','left');
-  _s('NA07',640,1130,'하루키','right'); _s('NA08',580,1170,'기시와다','down');
-  _s('NA09',480,1200,'가이즈카','down'); _s('NA10',380,1220,'이즈미사노','down');
-  _s('NA11',240,1230,'린쿠타운','down'); _s('NA12',120,1240,'간사이공항','left');
-  // JR Tozai
-  _s('JT01',1080,510,''); _s('JT02',1000,490,'오사카조기타즈메','right'); _s('JT03',880,470,'오사카텐만궁','right');
-  _s('JT04',720,465,'기타신치'); _s('JT05',560,465,'신후쿠시마'); _s('JT06',420,465,'에비에');
-  _s('JT07',240,465,'→ 아마가사키 방면');
-  // Nakanoshima
-  _s('NK01',440,540,'나카노시마'); _s('NK02',560,540,'와타나베바시');
-  _s('NK03',660,540,'오에바시'); _s('NK04',760,540,'나니와바시'); _s('NK05',820,545,'');
-
-  const _LP={M08:'down',M09:'left',M10:'left',M11:'left',M13:'left',M24:'left',M25:'left',M26:'left',M27:'left',M30:'down',
-    T11:'down',T12:'right',T14:'down',T15:'up-right',T16:'down',T17:'up',T19:'left',T20:'right',T22:'right',T25:'down',T28:'right',T30:'right',
-    Y11:'left',Y12:'right',Y14:'left',Y17:'right',Y18:'right',Y20:'left',
-    C11:'down',C19:'right',C21:'down',K12:'right',K14:'up',
-    N14:'right',N17:'up',N19:'down',N21:'right',N24:'down',N25:'right',N26:'right',N27:'right',
-    JL05:'right',JL06:'right',JL07:'down-right',JL08:'up',JL09:'up',JL10:'up',JL11:'left',JL12:'right',JL14:'down-right',JL15:'left',JL16:'left',JL18:'down',JL19:'down',
-    NA04:'right',NA05:'right',NA06:'left',NA07:'right',NA08:'down',NA09:'down',NA10:'down',NA11:'down',NA12:'left',
-    JT02:'right',JT03:'right'};
-  for(const [id,pos] of Object.entries(_LP)){if(_S[id])_S[id].lp=pos;}
-
-  const _LP2={
-    M:  ['M08','M09','M10','M11','M13','M14','M15','M16','M17','M18','M19','M20','M21','M22','M23','M24','M25','M26','M27','M30'],
-    T:  ['T11','T12','T13','T14','T15','T16','T17','T18','T19','T20','T21','T22','T23','T24','T25','T26','T27','T28','T29','T30','T31','T32','T33','T34','T35'],
-    Y:  ['Y11','Y12','Y13','Y14','Y15','Y16','Y17','Y18','Y19','Y20','Y21'],
-    S:  ['S11','S12','S13','S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24'],
-    K:  ['K11','K12','K13','K14','K15','K16','K17','K18','K19','K20'],
-    I:  ['I11','I12','I13','I14','I15','I16','I17','I18'],
-    C:  ['C10','C11','C12','C13','C14','C15','C16','C18','C17','C19','C20','C21','C22','C23'],
-    N:  ['N11','N12','N13','N14','N15','N16','N17','N18','N19','N20','N21','N22','N23','N24','N25','N26','N27'],
-    P:  ['P09','P10','P11','P12','P13','P14','P15','P16'],
-    NK: ['NK01','NK02','NK03','NK04','NK05'],
-    JL: ['JL01','JL02','JL03','JL04','JL05','JL06','JL07','JL08','JL09','JL10','JL11','JL12','JL13','JL14','JL15','JL16','JL17','JL18','JL19'],
-    NN: ['NN01','NN02','NN03','NN04','NN05'],
-    NA: ['NA01','NA02','NA03','NA04','NA05','NA06','NA07','NA08','NA09','NA10','NA11','NA12'],
-    JT: ['JT01','JT02','JT03','JT04','JT05','JT06','JT07']
-  };
-
-  const _LC={M:'#C73037',T:'#8E5B96',Y:'#1E6FB8',S:'#D85FA0',K:'#8C5A33',I:'#E29A1F',C:'#1F9A5B',N:'#A8B533',P:'#5FA8C9',NK:'#1A7A75',JL:'#E07D1F',NN:'#22427A',NA:'#0E7C8E',JT:'#D6498E'};
-
-  const _HUBS=[
-    {kr:'혼마치',ids:['M18','Y13','C16'],ls:null},
-    {kr:'난바',ids:['M20','Y15','S16'],ls:null},
-    {kr:'신사이바시',ids:['M19','N15'],ls:'left'},
-    {kr:'다이코쿠초',ids:['M21','Y16'],ls:null},
-    {kr:'도부쓰엔마에',ids:['M22','K19'],ls:'down'},
-    {kr:'덴노지',ids:['M23','T26','JL01'],ls:null},
-    {kr:'덴진바시스지로쿠초메',ids:['T18','K11'],ls:'up'},
-    {kr:'미나미모리마치',ids:['T20','K13'],ls:'right'},
-    {kr:'덴마바시',ids:['T21','NK05'],ls:null},
-    {kr:'다니마치4초메',ids:['T22','C18'],ls:'right'},
-    {kr:'다니마치6초메',ids:['T23','N18'],ls:null},
-    {kr:'다니마치9초메',ids:['T24','S18'],ls:null},
-    {kr:'사카이스지혼마치',ids:['K15','C17'],ls:'up'},
-    {kr:'나가호리바시',ids:['K16','N16'],ls:null},
-    {kr:'닛폰바시',ids:['S17','K17'],ls:null},
-    {kr:'아와자',ids:['S13','C15'],ls:'left'},
-    {kr:'니시나가호리',ids:['S14','N13'],ls:'down'},
-    {kr:'모리노미야',ids:['C19','N20'],ls:'right'},
-    {kr:'미도리바시',ids:['I16','C20'],ls:'up'},
-    {kr:'가모4초메',ids:['I15','N23'],ls:'right'},
-    {kr:'다이시바시이마이치',ids:['T13','I13'],ls:'down-right'},
-    {kr:'이마자토',ids:['S20','I18'],ls:null},
-    {kr:'스미노에코엔',ids:['Y21','P16'],ls:null},
-    {kr:'코스모스퀘어',ids:['C10','P09'],ls:null},
-    {kr:'교바시',ids:['N22','JT01'],ls:null},
-    {kr:'신이마미야',ids:['NN03','NA02'],ls:'left'},
-    {kr:'덴가차야',ids:['K20','NN04','NA03'],ls:'down'},
-    {kr:'난바 (난카이)',ids:['NN01','NA01'],ls:null}
-  ];
-
-  const _JLC={cx:720,cy:640,r:240};
-
-  function _buildMetroSVG(){
-    const W=1600,H=1260,BG='#F4EFE2',TEXT='#1A1A1A',SF='#FFFDF7';
-    const lw=8,sr=5,cr=18,fs=11;
-    const FONT="'Noto Sans KR','Hiragino Kaku Gothic ProN','Apple SD Gothic Neo',sans-serif";
-
-    function spPath(pts,r){
-      if(pts.length<2)return'';
-      if(pts.length===2||r<=0)return'M '+pts.map(p=>p.x+','+p.y).join(' L ');
-      const out=['M '+pts[0].x+','+pts[0].y];
-      for(let i=1;i<pts.length-1;i++){
-        const pv=pts[i-1],cu=pts[i],nx=pts[i+1];
-        const d1=Math.hypot(cu.x-pv.x,cu.y-pv.y),d2=Math.hypot(nx.x-cu.x,nx.y-cu.y);
-        if(d1<0.5||d2<0.5)continue;
-        const rr=Math.min(r,d1/2,d2/2);
-        const ix=(cu.x-(cu.x-pv.x)/d1*rr).toFixed(1),iy=(cu.y-(cu.y-pv.y)/d1*rr).toFixed(1);
-        const ox=(cu.x+(nx.x-cu.x)/d2*rr).toFixed(1),oy=(cu.y+(nx.y-cu.y)/d2*rr).toFixed(1);
-        out.push('L '+ix+','+iy,'Q '+cu.x+','+cu.y+' '+ox+','+oy);
-      }
-      const l=pts[pts.length-1];out.push('L '+l.x+','+l.y);return out.join(' ');
-    }
-    const lOf=id=>{const t=id.slice(0,2);return _LC[t]?t:id[0];};
-    const cOf=id=>_LC[lOf(id)];
-
-    const hSet=new Set();_HUBS.forEach(h=>h.ids.forEach(id=>hSet.add(id)));
-    const e=[];
-    e.push(`<rect width="${W}" height="${H}" fill="${BG}"/>`);
-
-    // Lines
-    const ord=['NA','NN','JL','JT','P','NK','C','N','S','K','I','T','Y','M'];
-    for(const code of ord){
-      const ids=_LP2[code];if(!ids)continue;
-      const col=_LC[code];
-      const op=['JL','NN','NA','JT'].includes(code)?0.82:1;
-      if(code==='JL'){
-        const{cx,cy,r}=_JLC;
-        e.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${lw}" stroke-opacity="${op}"/>`);
-      }else{
-        const pts=ids.map(id=>_S[id]).filter(Boolean);
-        e.push(`<path d="${spPath(pts,cr)}" fill="none" stroke="${col}" stroke-width="${lw}" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="${op}"/>`);
-      }
-    }
-
-    // Hub capsules
-    for(const h of _HUBS){
-      const pts=h.ids.map(id=>_S[id]).filter(Boolean);if(!pts.length)continue;
-      const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
-      const mnX=Math.min(...xs),mxX=Math.max(...xs),mnY=Math.min(...ys),mxY=Math.max(...ys);
-      const pd=9,x=mnX-pd,y=mnY-pd,w=mxX-mnX+pd*2,hh=mxY-mnY+pd*2,rx=Math.min(w,hh)/2;
-      e.push(`<rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="${rx}" ry="${rx}" fill="${SF}" stroke="#1A1A1A" stroke-width="2.2"/>`);
-    }
-    // Hub dots
-    const hDseen=new Set();
-    for(const h of _HUBS)for(const id of h.ids){
-      const st=_S[id];if(!st)continue;
-      const k=st.x+','+st.y;if(hDseen.has(k))continue;hDseen.add(k);
-      const col=cOf(id);if(!col)continue;
-      e.push(`<circle cx="${st.x}" cy="${st.y}" r="${Math.max(sr*0.9,4)}" fill="${col}"/>`);
-    }
-    // Station dots (non-hub, non-hidden)
-    for(const[id,st]of Object.entries(_S)){
-      if(hSet.has(id)||st.hidden||!cOf(id))continue;
-      e.push(`<circle cx="${st.x}" cy="${st.y}" r="${sr}" fill="${SF}" stroke="${cOf(id)}" stroke-width="1.8"/>`);
-    }
-
-    // Label placement
-    const lPos=(id,st)=>{
-      const pos=st.lp||{M:'right',Y:'left',K:'left',P:'left',NK:'up',JL:'right',NN:'right',NA:'right',JT:'up',T:'right',I:'right',S:'up',N:'up',C:'up'}[lOf(id)]||'right';
-      return({up:{dx:0,dy:-14,a:'middle'},down:{dx:0,dy:22,a:'middle'},left:{dx:-13,dy:4,a:'end'},right:{dx:13,dy:4,a:'start'},
-        'down-right':{dx:11,dy:20,a:'start'},'down-left':{dx:-11,dy:20,a:'end'},'up-right':{dx:11,dy:-14,a:'start'},'up-left':{dx:-11,dy:-14,a:'end'}})[pos]||{dx:13,dy:4,a:'start'};
-    };
-    const HS=`paint-order="stroke" stroke="${BG}" stroke-width="3" stroke-linejoin="round"`;
-    const TS=`font-size="${fs}" fill="${TEXT}" font-weight="500" font-family="${FONT}" ${HS}`;
-
-    // Non-hub labels
-    for(const[id,st]of Object.entries(_S)){
-      if(hSet.has(id)||st.hidden||!st.kr||!cOf(id))continue;
-      const{dx,dy,a}=lPos(id,st);
-      e.push(`<text x="${st.x+dx}" y="${st.y+dy}" text-anchor="${a}" ${TS}>${st.kr}</text>`);
-    }
-    // Hub labels
-    for(const h of _HUBS){
-      if(!h.kr)continue;
-      const pts=h.ids.map(id=>_S[id]).filter(Boolean);if(!pts.length)continue;
-      const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
-      const cx=(Math.min(...xs)+Math.max(...xs))/2,mnY=Math.min(...ys),mxY=Math.max(...ys),mxX=Math.max(...xs),mnX=Math.min(...xs);
-      let lx=cx,ly=mnY-18,la='middle';
-      if(h.ls==='left'){lx=mnX-12;la='end';ly=(mnY+mxY)/2+4;}
-      else if(h.ls==='right'){lx=mxX+12;la='start';ly=(mnY+mxY)/2+4;}
-      else if(h.ls==='down'){lx=cx;ly=mxY+22;la='middle';}
-      else if(h.ls==='up'){lx=cx;ly=mnY-18;la='middle';}
-      else if(h.ls==='down-right'){lx=mxX+8;ly=mxY+20;la='start';}
-      e.push(`<text x="${lx}" y="${ly}" text-anchor="${la}" font-size="${fs+1}" fill="${TEXT}" font-weight="700" font-family="${FONT}" ${HS}>${h.kr}</text>`);
-    }
-    return`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block;">${e.join('')}</svg>`;
-  }
-  window._buildMetroSVG=_buildMetroSVG;
-})();
 
 /* ===================================================
    STATIONS DATABASE
-   x, y = % of SVG viewBox (svgX/16, svgY/12.6)
+   x, y = % of SVG viewBox (v9 map: x/12, (y_group+130)/11.4)
    q = Google Maps search query (English)
    =================================================== */
 const STATIONS = [
-  // === Midosuji (M) — red ===
-  { id: 'shinosaka',     ko: '신오사카',            ja: '新大阪',         q: 'Shin-Osaka Station Osaka',                    lines: ['M','JR'],      x: 45.0, y: 23.4 },
-  { id: 'nishinakajima', ko: '니시나카지마미나미카타', ja: '西中島南方',    q: 'Nishinakajima-Minamigata Station Osaka',      lines: ['M','HK'],      x: 45.0, y: 27.0 },
-  { id: 'nakatsu',       ko: '나카츠',              ja: '中津',           q: 'Nakatsu Station Osaka Metro Midosuji',        lines: ['M'],           x: 45.0, y: 30.6 },
-  { id: 'umeda',         ko: '우메다',              ja: '梅田',           q: 'Umeda Station Osaka Metro',                   lines: ['M'],           x: 45.0, y: 34.1 },
-  { id: 'yodoyabashi',   ko: '요도야바시',          ja: '淀屋橋',         q: 'Yodoyabashi Station Osaka',                   lines: ['M','KH'],      x: 45.0, y: 38.9 },
-  { id: 'honmachi',      ko: '혼마치',              ja: '本町',           q: 'Honmachi Station Osaka',                      lines: ['M','Y','C'],   x: 45.0, y: 47.6 },
-  { id: 'shinsaibashi',  ko: '신사이바시',          ja: '心斎橋',         q: 'Shinsaibashi Station Osaka',                  lines: ['M','N'],       x: 45.0, y: 52.4 },
-  { id: 'namba',         ko: '난바',                ja: '難波',           q: 'Namba Station Osaka',                         lines: ['M','Y','S'],   x: 45.0, y: 57.1 },
-  { id: 'daikokucho',    ko: '다이코쿠초',          ja: '大国町',         q: 'Daikokucho Station Osaka',                    lines: ['M','Y'],       x: 45.0, y: 60.7 },
-  { id: 'doubutsuenmae', ko: '도부츠엔마에',        ja: '動物園前',       q: 'Dobutsuen-mae Station Osaka',                 lines: ['M','K'],       x: 45.0, y: 64.7 },
-  { id: 'tennoji',       ko: '덴노지',              ja: '天王寺',         q: 'Tennoji Station Osaka',                       lines: ['M','T','JR'],  x: 45.0, y: 69.8 },
-  { id: 'showacho',      ko: '쇼와초',              ja: '昭和町',         q: 'Showacho Station Osaka Midosuji',             lines: ['M'],           x: 45.0, y: 73.4 },
-  { id: 'nishitanabe',   ko: '니시타나베',          ja: '西田辺',         q: 'Nishitanabe Station Osaka',                   lines: ['M'],           x: 45.0, y: 76.6 },
+  // === Midosuji (M) — red  (v9 x=560, formula x/12, (y+130)/11.4) ===
+  { id: 'shinosaka',     ko: '신오사카',            ja: '新大阪',         q: 'Shin-Osaka Station Osaka',                    lines: ['M','JR'],      x: 46.7, y: 16.5 },
+  { id: 'nishinakajima', ko: '니시나카지마미나미카타', ja: '西中島南方',    q: 'Nishinakajima-Minamigata Station Osaka',      lines: ['M','HK'],      x: 46.7, y: 28.9 },
+  { id: 'nakatsu',       ko: '나카츠',              ja: '中津',           q: 'Nakatsu Station Osaka Metro Midosuji',        lines: ['M'],           x: 46.7, y: 20.9 },
+  { id: 'umeda',         ko: '우메다',              ja: '梅田',           q: 'Umeda Station Osaka Metro',                   lines: ['M'],           x: 46.7, y: 39.9 },
+  { id: 'yodoyabashi',   ko: '요도야바시',          ja: '淀屋橋',         q: 'Yodoyabashi Station Osaka',                   lines: ['M','KH'],      x: 46.7, y: 45.6 },
+  { id: 'honmachi',      ko: '혼마치',              ja: '本町',           q: 'Honmachi Station Osaka',                      lines: ['M','Y','C'],   x: 46.7, y: 52.5 },
+  { id: 'shinsaibashi',  ko: '신사이바시',          ja: '心斎橋',         q: 'Shinsaibashi Station Osaka',                  lines: ['M','N'],       x: 46.7, y: 57.4 },
+  { id: 'namba',         ko: '난바',                ja: '難波',           q: 'Namba Station Osaka',                         lines: ['M','Y','S'],   x: 46.7, y: 61.6 },
+  { id: 'daikokucho',    ko: '다이코쿠초',          ja: '大国町',         q: 'Daikokucho Station Osaka',                    lines: ['M','Y'],       x: 46.7, y: 64.0 },
+  { id: 'doubutsuenmae', ko: '도부츠엔마에',        ja: '動物園前',       q: 'Dobutsuen-mae Station Osaka',                 lines: ['M','K'],       x: 46.7, y: 66.8 },
+  { id: 'tennoji',       ko: '덴노지',              ja: '天王寺',         q: 'Tennoji Station Osaka',                       lines: ['M','T','JR'],  x: 41.4, y: 74.9 },
+  { id: 'showacho',      ko: '쇼와초',              ja: '昭和町',         q: 'Showacho Station Osaka Midosuji',             lines: ['M'],           x: 46.7, y: 70.4 },
+  { id: 'nishitanabe',   ko: '니시타나베',          ja: '西田辺',         q: 'Nishitanabe Station Osaka',                   lines: ['M'],           x: 46.7, y: 75.9 },
 
-  // === Tanimachi (T) — purple ===
-  { id: 'miyakojima',    ko: '미야코지마',          ja: '都島',           q: 'Miyakojima Station Osaka',                    lines: ['T'],           x: 54.4, y: 29.4 },
-  { id: 'tenjin6',       ko: '텐진바시6초메',       ja: '天神橋筋六丁目', q: 'Tenjimbashisuji-rokuchome Station Osaka',     lines: ['T','K','HK'],  x: 51.3, y: 26.2 },
-  { id: 'nakazakicho',   ko: '나카자키초',          ja: '中崎町',         q: 'Nakazakicho Station Osaka',                   lines: ['T'],           x: 51.3, y: 30.2 },
-  { id: 'higashiumeda',  ko: '히가시우메다',        ja: '東梅田',         q: 'Higashi-Umeda Station Osaka',                 lines: ['T'],           x: 51.3, y: 34.1 },
-  { id: 'minamimorimachi', ko: '미나미모리마치',    ja: '南森町',         q: 'Minami-morimachi Station Osaka',              lines: ['T','K'],       x: 51.3, y: 38.9 },
-  { id: 'tenmabashi',    ko: '텐마바시',            ja: '天満橋',         q: 'Temmabashi Station Osaka',                    lines: ['T','KH','KN'], x: 51.3, y: 43.3 },
-  { id: 'tanimachi4',    ko: '다니마치4초메',       ja: '谷町四丁目',     q: 'Tanimachi 4-chome Station Osaka',             lines: ['T','C'],       x: 51.3, y: 47.6 },
-  { id: 'tanimachi6',    ko: '다니마치6초메',       ja: '谷町六丁目',     q: 'Tanimachi 6-chome Station Osaka',             lines: ['T','N'],       x: 51.3, y: 51.2 },
-  { id: 'tanimachi9',    ko: '다니마치9초메',       ja: '谷町九丁目',     q: 'Tanimachi 9-chome Station Osaka',             lines: ['T','S'],       x: 51.3, y: 55.2 },
-  { id: 'shitennoji',    ko: '시텐노지마에',        ja: '四天王寺前夕陽ヶ丘', q: 'Shitennoji-mae Yuhigaoka Station Osaka', lines: ['T'],           x: 51.3, y: 59.9 },
-  { id: 'tsuruhashi',    ko: '츠루하시',            ja: '鶴橋',           q: 'Tsuruhashi Station Osaka',                    lines: ['T','JR','KT'], x: 56.3, y: 60.3 },
+  // === Tanimachi (T) — purple  (v9 x=655) ===
+  { id: 'miyakojima',    ko: '미야코지마',          ja: '都島',           q: 'Miyakojima Station Osaka',                    lines: ['T'],           x: 54.6, y: 33.3 },
+  { id: 'tenjin6',       ko: '텐진바시6초메',       ja: '天神橋筋六丁目', q: 'Tenjimbashisuji-rokuchome Station Osaka',     lines: ['T','K','HK'],  x: 54.6, y: 43.9 },
+  { id: 'nakazakicho',   ko: '나카자키초',          ja: '中崎町',         q: 'Nakazakicho Station Osaka',                   lines: ['T'],           x: 54.6, y: 37.7 },
+  { id: 'higashiumeda',  ko: '히가시우메다',        ja: '東梅田',         q: 'Higashi-Umeda Station Osaka',                 lines: ['T'],           x: 54.6, y: 39.9 },
+  { id: 'minamimorimachi', ko: '미나미모리마치',    ja: '南森町',         q: 'Minami-morimachi Station Osaka',              lines: ['T','K'],       x: 54.6, y: 46.1 },
+  { id: 'tenmabashi',    ko: '텐마바시',            ja: '天満橋',         q: 'Temmabashi Station Osaka',                    lines: ['T','KH','KN'], x: 54.6, y: 48.7 },
+  { id: 'tanimachi4',    ko: '다니마치4초메',       ja: '谷町四丁目',     q: 'Tanimachi 4-chome Station Osaka',             lines: ['T','C'],       x: 54.6, y: 52.5 },
+  { id: 'tanimachi6',    ko: '다니마치6초메',       ja: '谷町六丁目',     q: 'Tanimachi 6-chome Station Osaka',             lines: ['T','N'],       x: 54.6, y: 58.1 },
+  { id: 'tanimachi9',    ko: '다니마치9초메',       ja: '谷町九丁目',     q: 'Tanimachi 9-chome Station Osaka',             lines: ['T','S'],       x: 54.6, y: 63.5 },
+  { id: 'shitennoji',    ko: '시텐노지마에',        ja: '四天王寺前夕陽ヶ丘', q: 'Shitennoji-mae Yuhigaoka Station Osaka', lines: ['T'],           x: 54.6, y: 69.3 },
+  { id: 'tsuruhashi',    ko: '츠루하시',            ja: '鶴橋',           q: 'Tsuruhashi Station Osaka',                    lines: ['T','JR','KT'], x: 56.8, y: 72.5 },
 
-  // === Yotsubashi (Y) — blue ===
-  { id: 'nishiumeda',    ko: '니시우메다',          ja: '西梅田',         q: 'Nishi-Umeda Station Osaka',                   lines: ['Y'],           x: 38.8, y: 34.1 },
-  { id: 'higobashi',     ko: '히고바시',            ja: '肥後橋',         q: 'Higobashi Station Osaka',                     lines: ['Y'],           x: 37.5, y: 38.9 },
-  { id: 'yotsubashi',    ko: '요츠바시',            ja: '四ツ橋',         q: 'Yotsubashi Station Osaka',                    lines: ['Y'],           x: 37.5, y: 52.4 },
+  // === Yotsubashi (Y) — blue  (v9 x=460) ===
+  { id: 'nishiumeda',    ko: '니시우메다',          ja: '西梅田',         q: 'Nishi-Umeda Station Osaka',                   lines: ['Y'],           x: 38.3, y: 39.9 },
+  { id: 'higobashi',     ko: '히고바시',            ja: '肥後橋',         q: 'Higobashi Station Osaka',                     lines: ['Y'],           x: 38.3, y: 47.6 },
+  { id: 'yotsubashi',    ko: '요츠바시',            ja: '四ツ橋',         q: 'Yotsubashi Station Osaka',                    lines: ['Y'],           x: 38.3, y: 55.4 },
 
-  // === Sennichimae (S) — pink ===
-  { id: 'nodahanshin',   ko: '노다한신',            ja: '野田阪神',       q: 'Noda-Hanshin Station Osaka',                  lines: ['S','HS'],      x: 22.5, y: 42.1 },
-  { id: 'tamagawa',      ko: '다마가와',            ja: '玉川',           q: 'Tamagawa Station Osaka Sennichimae',          lines: ['S'],           x: 26.9, y: 46.8 },
-  { id: 'sakuragawa',    ko: '사쿠라가와',          ja: '桜川',           q: 'Sakuragawa Station Osaka',                    lines: ['S','HS'],      x: 41.3, y: 57.1 },
-  { id: 'nipponbashi',   ko: '닛폰바시',            ja: '日本橋',         q: 'Nipponbashi Station Osaka',                   lines: ['S','K'],       x: 48.1, y: 57.1 },
-  { id: 'imazato_s',     ko: '이마자토',            ja: '今里',           q: 'Imazato Station Osaka Sennichimae',           lines: ['S','I'],       x: 58.8, y: 61.1 },
+  // === Sennichimae (S) — pink  (v9 y=616) ===
+  { id: 'nodahanshin',   ko: '노다한신',            ja: '野田阪神',       q: 'Noda-Hanshin Station Osaka',                  lines: ['S','HS'],      x:  9.0, y: 65.4 },
+  { id: 'tamagawa',      ko: '다마가와',            ja: '玉川',           q: 'Tamagawa Station Osaka Sennichimae',          lines: ['S'],           x: 13.6, y: 65.4 },
+  { id: 'sakuragawa',    ko: '사쿠라가와',          ja: '桜川',           q: 'Sakuragawa Station Osaka',                    lines: ['S','HS'],      x: 32.5, y: 65.4 },
+  { id: 'nipponbashi',   ko: '닛폰바시',            ja: '日本橋',         q: 'Nipponbashi Station Osaka',                   lines: ['S','K'],       x: 39.7, y: 65.4 },
+  { id: 'imazato_s',     ko: '이마자토',            ja: '今里',           q: 'Imazato Station Osaka Sennichimae',           lines: ['S','I'],       x: 51.7, y: 68.9 },
 
   // === Sakaisuji (K) — brown ===
-  { id: 'ogimachi',      ko: '오기마치',            ja: '扇町',           q: 'Ogimachi Station Osaka',                      lines: ['K'],           x: 54.4, y: 32.5 },
-  { id: 'sakaisujihommachi', ko: '사카이스지혼마치', ja: '堺筋本町',      q: 'Sakaisuji-Hommachi Station Osaka',            lines: ['K','C'],       x: 54.4, y: 47.6 },
-  { id: 'nagahoribashi', ko: '나가호리바시',        ja: '長堀橋',         q: 'Nagahoribashi Station Osaka',                 lines: ['K','N'],       x: 50.0, y: 51.2 },
-  { id: 'ebisucho',      ko: '에비스초',            ja: '恵美須町',       q: 'Ebisucho Station Osaka',                      lines: ['K'],           x: 48.1, y: 61.1 },
+  { id: 'ogimachi',      ko: '오기마치',            ja: '扇町',           q: 'Ogimachi Station Osaka',                      lines: ['K'],           x: 54.6, y: 41.7 },
+  { id: 'sakaisujihommachi', ko: '사카이스지혼마치', ja: '堺筋本町',      q: 'Sakaisuji-Hommachi Station Osaka',            lines: ['K','C'],       x: 51.4, y: 52.5 },
+  { id: 'nagahoribashi', ko: '나가호리바시',        ja: '長堀橋',         q: 'Nagahoribashi Station Osaka',                 lines: ['K','N'],       x: 51.4, y: 58.1 },
+  { id: 'ebisucho',      ko: '에비스초',            ja: '恵美須町',       q: 'Ebisucho Station Osaka',                      lines: ['K'],           x: 43.3, y: 66.2 },
 
-  // === Chuo (C) — green ===
-  { id: 'cosmosquare',   ko: '코스모스퀘어',        ja: 'コスモスクエア', q: 'Cosmosquare Station Osaka',                   lines: ['C','P'],       x:  8.1, y: 59.5 },
-  { id: 'osakako',       ko: '오사카항',            ja: '大阪港',         q: 'Osakako Station Osaka',                       lines: ['C'],           x: 12.5, y: 56.7 },
-  { id: 'bentencho',     ko: '벤텐초',              ja: '弁天町',         q: 'Bentencho Station Osaka',                     lines: ['C','JR'],      x: 21.3, y: 53.2 },
-  { id: 'kujo',          ko: '쿠조',                ja: '九条',           q: 'Kujo Station Osaka',                          lines: ['C','HS'],      x: 25.6, y: 52.4 },
-  { id: 'awaza',         ko: '아와자',              ja: '阿波座',         q: 'Awaza Station Osaka',                         lines: ['C','Y'],       x: 31.3, y: 52.4 },
-  { id: 'morinomiya',    ko: '모리노미야',          ja: '森ノ宮',         q: 'Morinomiya Station Osaka',                    lines: ['C','N','JR'],  x: 60.6, y: 47.6 },
+  // === Chuo (C) — green  (v9 y=468) ===
+  { id: 'cosmosquare',   ko: '코스모스퀘어',        ja: 'コスモスクエア', q: 'Cosmosquare Station Osaka',                   lines: ['C','P'],       x:  7.2, y: 52.5 },
+  { id: 'osakako',       ko: '오사카항',            ja: '大阪港',         q: 'Osakako Station Osaka',                       lines: ['C'],           x: 13.0, y: 52.5 },
+  { id: 'bentencho',     ko: '벤텐초',              ja: '弁天町',         q: 'Bentencho Station Osaka',                     lines: ['C','JR'],      x: 32.8, y: 47.3 },
+  { id: 'kujo',          ko: '쿠조',                ja: '九条',           q: 'Kujo Station Osaka',                          lines: ['C','HS'],      x: 36.7, y: 52.5 },
+  { id: 'awaza',         ko: '아와자',              ja: '阿波座',         q: 'Awaza Station Osaka',                         lines: ['C','Y'],       x: 40.8, y: 52.5 },
+  { id: 'morinomiya',    ko: '모리노미야',          ja: '森ノ宮',         q: 'Morinomiya Station Osaka',                    lines: ['C','N','JR'],  x: 67.1, y: 55.3 },
 
   // === Nagahori (N) — light green ===
-  { id: 'taisho',        ko: '다이쇼',              ja: '大正',           q: 'Taisho Station Osaka',                        lines: ['N','JR'],      x: 23.8, y: 63.5 },
-  { id: 'kyobashi',      ko: '쿄바시',              ja: '京橋',           q: 'Kyobashi Station Osaka',                      lines: ['N','JR','KH'], x: 67.5, y: 40.5 },
+  { id: 'taisho',        ko: '다이쇼',              ja: '大正',           q: 'Taisho Station Osaka',                        lines: ['N','JR'],      x: 30.4, y: 52.4 },
+  { id: 'kyobashi',      ko: '쿄바시',              ja: '京橋',           q: 'Kyobashi Station Osaka',                      lines: ['N','JR','KH'], x: 62.9, y: 52.4 },
 
   // === Imazatosuji (I) — orange ===
-  { id: 'imazato_i',     ko: '이마자토(I선)',       ja: '今里',           q: 'Imazato Station Osaka Imazatosuji',           lines: ['I'],           x: 58.8, y: 61.1 },
+  { id: 'imazato_i',     ko: '이마자토(I선)',       ja: '今里',           q: 'Imazato Station Osaka Imazatosuji',           lines: ['I'],           x: 51.7, y: 68.9 },
 
   // === JR Loop & other JR ===
-  { id: 'osaka',         ko: '오사카',              ja: '大阪',           q: 'Osaka Station JR',                            lines: ['JR'],          x: 42.5, y: 32.0 },
-  { id: 'fukushima',     ko: '후쿠시마',            ja: '福島',           q: 'Fukushima Station Osaka JR',                  lines: ['JR','HS'],     x: 37.9, y: 34.1 },
-  { id: 'noda_jr',       ko: '노다',                ja: '野田',           q: 'Noda Station JR Osaka',                       lines: ['JR'],          x: 33.9, y: 37.9 },
-  { id: 'nishikujo',     ko: '니시쿠조',            ja: '西九条',         q: 'Nishikujo Station Osaka',                     lines: ['JR','HS'],     x: 31.3, y: 43.2 },
-  { id: 'shinimamiya',   ko: '신이마미야',          ja: '新今宮',         q: 'Shin-Imamiya Station Osaka',                  lines: ['JR','NK'],     x: 40.1, y: 68.8 },
-  { id: 'tenma',         ko: '텐마',                ja: '天満',           q: 'Temma Station Osaka',                         lines: ['JR'],          x: 47.5, y: 32.0 },
-  { id: 'sakuranomiya',  ko: '사쿠라노미야',        ja: '桜ノ宮',         q: 'Sakuranomiya Station Osaka',                  lines: ['JR'],          x: 52.1, y: 34.1 },
-  { id: 'universalcity', ko: '유니버설시티',        ja: 'ユニバーサルシティ', q: 'Universal-city Station Osaka',           lines: ['JR'],          x: 29.1, y: 40.5 },
+  { id: 'osaka',         ko: '오사카',              ja: '大阪',           q: 'Osaka Station JR',                            lines: ['JR'],          x: 51.9, y: 39.9 },
+  { id: 'fukushima',     ko: '후쿠시마',            ja: '福島',           q: 'Fukushima Station Osaka JR',                  lines: ['JR','HS'],     x: 46.7, y: 39.9 },
+  { id: 'noda_jr',       ko: '노다',                ja: '野田',           q: 'Noda Station JR Osaka',                       lines: ['JR'],          x: 41.4, y: 40.8 },
+  { id: 'nishikujo',     ko: '니시쿠조',            ja: '西九条',         q: 'Nishikujo Station Osaka',                     lines: ['JR','HS'],     x: 36.6, y: 43.3 },
+  { id: 'shinimamiya',   ko: '신이마미야',          ja: '新今宮',         q: 'Shin-Imamiya Station Osaka',                  lines: ['JR','NK'],     x: 32.8, y: 68.5 },
+  { id: 'tenma',         ko: '텐마',                ja: '天満',           q: 'Temma Station Osaka',                         lines: ['JR'],          x: 56.8, y: 43.3 },
+  { id: 'sakuranomiya',  ko: '사쿠라노미야',        ja: '桜ノ宮',         q: 'Sakuranomiya Station Osaka',                  lines: ['JR'],          x: 60.5, y: 47.3 },
+  { id: 'universalcity', ko: '유니버설시티',        ja: 'ユニバーサルシティ', q: 'Universal-city Station Osaka',           lines: ['JR'],          x: 32.5, y: 44.0 },
 
   // === Hankyu (HK) ===
-  { id: 'umeda_hk',      ko: '한큐 우메다',         ja: '阪急梅田',       q: 'Osaka-Umeda Station Hankyu',                  lines: ['HK'],          x: 41.9, y: 32.5 },
-  { id: 'juso',          ko: '주소',                ja: '十三',           q: 'Juso Station Hankyu Osaka',                   lines: ['HK'],          x: 34.4, y: 23.0 },
+  { id: 'umeda_hk',      ko: '한큐 우메다',         ja: '阪急梅田',       q: 'Osaka-Umeda Station Hankyu',                  lines: ['HK'],          x: 46.7, y: 26.5 },
+  { id: 'juso',          ko: '주소',                ja: '十三',           q: 'Juso Station Hankyu Osaka',                   lines: ['HK'],          x: 51.8, y: 26.5 },
 
   // === Hanshin (HS) ===
-  { id: 'umeda_hs',      ko: '한신 우메다',         ja: '阪神梅田',       q: 'Osaka-Umeda Station Hanshin',                 lines: ['HS'],          x: 43.1, y: 33.3 },
-  { id: 'osakananba',    ko: '오사카난바',          ja: '大阪難波',       q: 'Osaka Namba Station',                         lines: ['HS','KT'],     x: 44.4, y: 57.9 },
+  { id: 'umeda_hs',      ko: '한신 우메다',         ja: '阪神梅田',       q: 'Osaka-Umeda Station Hanshin',                 lines: ['HS'],          x: 45.4, y: 39.9 },
+  { id: 'osakananba',    ko: '오사카난바',          ja: '大阪難波',       q: 'Osaka Namba Station',                         lines: ['HS','KT'],     x: 46.1, y: 61.6 },
 
   // === Nankai (NK) ===
-  { id: 'namba_nk',      ko: '난바(난카이)',        ja: '難波',           q: 'Namba Station Nankai Osaka',                  lines: ['NK'],          x: 44.7, y: 57.5 },
-  { id: 'tengachaya',    ko: '텐가차야',            ja: '天下茶屋',       q: 'Tengachaya Station Osaka',                    lines: ['NK','K'],      x: 42.5, y: 69.0 },
-  { id: 'kansaiairport', ko: '간사이공항',          ja: '関西空港',       q: 'Kansai International Airport Station Osaka',  lines: ['NK','JR'],     x:  7.5, y: 98.4 },
+  { id: 'namba_nk',      ko: '난바(난카이)',        ja: '難波',           q: 'Namba Station Nankai Osaka',                  lines: ['NK'],          x: 25.4, y: 61.6 },
+  { id: 'tengachaya',    ko: '텐가차야',            ja: '天下茶屋',       q: 'Tengachaya Station Osaka',                    lines: ['NK','K'],      x: 25.4, y: 73.7 },
+  { id: 'kansaiairport', ko: '간사이공항',          ja: '関西空港',       q: 'Kansai International Airport Station Osaka',  lines: ['NK','JR'],     x: 25.4, y: 94.7 },
 
-  // === Keihan Nakanoshima (KN) ===
-  { id: 'naniwabashi',   ko: '나니와바시',           ja: 'なにわ橋',       q: 'Naniwabashi Station Keihan Osaka',            lines: ['KN'],          x: 47.5, y: 42.9 },
-  { id: 'oebashi',       ko: '오에바시',             ja: '大江橋',         q: 'Oebashi Station Keihan Osaka',                lines: ['KN'],          x: 41.3, y: 42.9 },
-  { id: 'watanabebashi', ko: '와타나베바시',         ja: '渡辺橋',         q: 'Watanabebashi Station Keihan Osaka',          lines: ['KN'],          x: 35.0, y: 42.9 },
-  { id: 'nakanoshima',   ko: '나카노시마',           ja: '中之島',         q: 'Nakanoshima Station Keihan Osaka',            lines: ['KN'],          x: 27.5, y: 42.9 },
+  // === Keihan Nakanoshima (KN)  (v9 y=336) ===
+  { id: 'naniwabashi',   ko: '나니와바시',           ja: 'なにわ橋',       q: 'Naniwabashi Station Keihan Osaka',            lines: ['KN'],          x: 35.5, y: 40.9 },
+  { id: 'oebashi',       ko: '오에바시',             ja: '大江橋',         q: 'Oebashi Station Keihan Osaka',                lines: ['KN'],          x: 26.8, y: 40.9 },
+  { id: 'watanabebashi', ko: '와타나베바시',         ja: '渡辺橋',         q: 'Watanabebashi Station Keihan Osaka',          lines: ['KN'],          x: 18.7, y: 40.9 },
+  { id: 'nakanoshima',   ko: '나카노시마',           ja: '中之島',         q: 'Nakanoshima Station Keihan Osaka',            lines: ['KN'],          x:  9.8, y: 40.9 },
 
-  // === Monorail (MN) ===
-  { id: 'senrichuo',     ko: '센리츄오',            ja: '千里中央',       q: 'Senri-Chuo Station Osaka',                    lines: ['MN'],          x: 45.0, y:  7.9 },
-  { id: 'bampaku',       ko: '반파쿠키넨코엔',      ja: '万博記念公園',   q: 'Banpaku-kinen-koen Station Osaka',            lines: ['MN'],          x: 60.0, y: 10.0 }
+  // === Monorail (MN) — v9 맵 외곽, 근사 좌표 ===
+  { id: 'senrichuo',     ko: '센리츄오',            ja: '千里中央',       q: 'Senri-Chuo Station Osaka',                    lines: ['MN'],          x: 46.7, y: 14.0 },
+  { id: 'bampaku',       ko: '반파쿠키넨코엔',      ja: '万博記念公園',   q: 'Banpaku-kinen-koen Station Osaka',            lines: ['MN'],          x: 58.3, y: 20.2 }
 ];
 
 /* ===================================================
@@ -1315,8 +1564,8 @@ for (const [a, b, line, min, stops] of EDGES_RAW) {
 /* ===================================================
    FARE CALCULATION
    =================================================== */
-// 히고바시(37.5%,38.9%)↔나카노시마(27.5%,42.9%) 거리≈10.77%, 실제1km=15분 → 1.4
-const COORD_TO_MIN = 1.4;
+// 난바(46.7%,61.6%)↔신사이바시(46.7%,57.4%) 거리≈4.2%, 실제500m=7.5분 → 1.8
+const COORD_TO_MIN = 1.8;
 
 function opOfLine(line) {
   if (['M','T','Y','S','K','I','C','N','P'].includes(line)) return 'metro';
@@ -1520,8 +1769,7 @@ const els = {
   routeCards:  document.getElementById('route-cards')
 };
 
-/* Inject SVG metro map */
-els.mapImg.innerHTML = _buildMetroSVG();
+/* SVG 노선도는 HTML에 직접 내장 */
 
 /* ===================================================
    HOTSPOTS
