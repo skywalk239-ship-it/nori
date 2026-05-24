@@ -1611,8 +1611,11 @@ function calcFare(segs) {
 function nearbyStations(stId, maxMin) {
   maxMin = maxMin || 15;
   const base = stationById[stId];
+  const baseLines = new Set(base.lines.filter(l => l !== 'WALK'));
   return STATIONS
     .filter(s => s.id !== stId)
+    // 같은 노선을 공유하는 역은 제외 — 이미 지하철로 연결돼 있으므로 도보 연결 불필요
+    .filter(s => !s.lines.some(l => l !== 'WALK' && baseLines.has(l)))
     .map(s => ({ id: s.id, walkMin: Math.round(Math.hypot(s.x - base.x, s.y - base.y) * COORD_TO_MIN) }))
     .filter(s => s.walkMin > 0 && s.walkMin <= maxMin)
     .sort((a, b) => a.walkMin - b.walkMin)
