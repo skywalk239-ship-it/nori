@@ -1564,8 +1564,9 @@ for (const [a, b, line, min, stops] of EDGES_RAW) {
 /* ===================================================
    FARE CALCULATION
    =================================================== */
-// 난바(46.7%,61.6%)↔신사이바시(46.7%,57.4%) 거리≈4.2%, 실제500m=7.5분 → 1.8
-const COORD_TO_MIN = 1.8;
+// 우메다(46.7,39.9)↔히가시우메다(54.6,39.9) 거리≈7.9%, WALK edge 3분 → 3/7.9≈0.38
+// v9 맵은 시각적 간격 과장 — 지리적 비례가 아니므로 실측 WALK 엣지로 보정
+const COORD_TO_MIN = 0.4;
 
 function opOfLine(line) {
   if (['M','T','Y','S','K','I','C','N','P'].includes(line)) return 'metro';
